@@ -22,6 +22,7 @@ public class ServerMain {
 
             while (true) {
                 socket = serverSocket.accept();
+                System.out.println("Кто-то подключился");
                 dataInputStream = new DataInputStream(socket.getInputStream());
                 dataOutputStream = new DataOutputStream(socket.getOutputStream());
                 System.out.println(dataInputStream.readUTF());

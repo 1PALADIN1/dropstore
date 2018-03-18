@@ -12,18 +12,7 @@
       <Label text="Вход в систему" />
       <HBox alignment="CENTER">
          <children>
-            <Label text="Логин:" />
-            <TextField>
-               <HBox.margin>
-                  <Insets bottom="5.0" left="12.0" right="5.0" top="5.0" />
-               </HBox.margin>
-            </TextField>
-         </children>
-      </HBox>
-      <HBox alignment="CENTER">
-         <children>
-            <Label text="Пароль:" />
-            <TextField>
+            <TextField promptText="Логин">
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>
@@ -32,11 +21,20 @@
       </HBox>
       <HBox alignment="CENTER">
          <children>
-            <Button minWidth="80.0" mnemonicParsing="false" text="Вход" textAlignment="CENTER">
+            <TextField promptText="Пароль">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </TextField>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER">
+         <children>
+            <Button minWidth="55.0" mnemonicParsing="false" text="Вход" textAlignment="CENTER" onAction="#login">
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin></Button>
-            <Button minWidth="80.0" mnemonicParsing="false" text="Регистрация" textAlignment="CENTER">
+            <Button minWidth="75.0" mnemonicParsing="false" text="Регистрация" textAlignment="CENTER">
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin></Button>
