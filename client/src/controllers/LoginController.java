@@ -1,7 +1,9 @@
 package controllers;
 
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.TextField;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,12 +18,20 @@ public class LoginController {
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
 
+    //контроллы
+    @FXML
+    TextField loginField;
+    @FXML
+    TextField passField;
+
     public void login() {
         try {
             socket = new Socket(SERVER_IP, SERVER_PORT);
             dataInputStream = new DataInputStream(socket.getInputStream());
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            dataOutputStream.writeUTF("Привет!");
+
+            String msg = loginField.getText() + passField.getText(); //временно для отладки
+            dataOutputStream.writeUTF(msg);
             showAlert(dataInputStream.readUTF());
 
         } catch (ConnectException e) {

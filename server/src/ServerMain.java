@@ -20,7 +20,7 @@ public class ServerMain {
 
             while (true) {
                 socket = serverSocket.accept();
-                new ClientHandler(socket);
+                new ClientHandler(socket); //создаём новую клиентскую сессию
             }
         } catch (IOException e) {
             e.printStackTrace();
