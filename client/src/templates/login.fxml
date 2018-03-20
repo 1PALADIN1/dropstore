@@ -12,7 +12,7 @@
       <Label text="Вход в систему" />
       <HBox alignment="CENTER">
          <children>
-            <TextField promptText="Логин">
+            <TextField fx:id="loginField" promptText="Логин">
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>
@@ -21,7 +21,7 @@
       </HBox>
       <HBox alignment="CENTER">
          <children>
-            <TextField promptText="Пароль">
+            <TextField fx:id="passField" promptText="Пароль">
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>

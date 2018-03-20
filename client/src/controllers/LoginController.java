@@ -1,11 +1,14 @@
 package controllers;
 
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.TextField;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 
 public class LoginController {
@@ -15,20 +18,30 @@ public class LoginController {
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
 
+    //контроллы
+    @FXML
+    TextField loginField;
+    @FXML
+    TextField passField;
+
     public void login() {
         try {
             socket = new Socket(SERVER_IP, SERVER_PORT);
             dataInputStream = new DataInputStream(socket.getInputStream());
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            dataOutputStream.writeUTF("Привет!");
+
+            String msg = loginField.getText() + passField.getText(); //временно для отладки
+            dataOutputStream.writeUTF(msg);
             showAlert(dataInputStream.readUTF());
 
+        } catch (ConnectException e) {
+            showAlert("Не удалось подключиться к серверу, возможно, сервер недоступен.");
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
-                dataInputStream.close();
-                dataOutputStream.close();
+                if (dataInputStream != null) dataInputStream.close();
+                if (dataOutputStream != null) dataOutputStream.close();
                 if (socket != null && !socket.isClosed()) socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
