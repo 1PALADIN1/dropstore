@@ -8,7 +8,7 @@ public class AuthService {
         dbManager = new DBManager();
     }
 
-    public boolean login(String login, String password) {
+    public synchronized boolean login(String login, String password) {
         return dbManager.checkExistence("SELECT * FROM users WHERE login = ? and password = ?", login, password);
     }
 
