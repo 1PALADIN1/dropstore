@@ -1,9 +1,6 @@
 package dbmanager;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 class DBManager {
     //класс для управления подключениями к БД
@@ -41,6 +38,8 @@ class DBManager {
             for (int i = 0; i < params.length; i++) {
                 preparedStatement.setString(i+1, params[i]);
             }
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.first()) return true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
