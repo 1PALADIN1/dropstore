@@ -38,8 +38,8 @@ class DBManager {
             for (int i = 0; i < params.length; i++) {
                 preparedStatement.setString(i+1, params[i]);
             }
-            ResultSet rs = preparedStatement.executeQuery();
-            if (rs.first()) return true;
+            if (preparedStatement.executeQuery().next()) return true;
+            //if (rs.first()) return true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
