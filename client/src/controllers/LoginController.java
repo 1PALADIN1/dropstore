@@ -30,7 +30,7 @@ public class LoginController {
             dataInputStream = new DataInputStream(socket.getInputStream());
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
-            String msg = loginField.getText() + passField.getText(); //временно для отладки
+            String msg = loginField.getText() + " " + passField.getText(); //временно для отладки
             dataOutputStream.writeUTF(msg);
             showAlert(dataInputStream.readUTF());
 

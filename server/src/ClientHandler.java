@@ -1,3 +1,5 @@
+import dbmanager.AuthService;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -7,9 +9,11 @@ public class ClientHandler extends Thread {
     private Socket socket;
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
+    private AuthService authService;
 
-    public ClientHandler(Socket socket) {
+    public ClientHandler(Socket socket, AuthService authService) {
         this.socket = socket;
+        this.authService = authService;
         connect();
     }
 
@@ -17,14 +21,16 @@ public class ClientHandler extends Thread {
         try {
             dataInputStream = new DataInputStream(socket.getInputStream());
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            String s = dataInputStream.readUTF();
-            System.out.println(s);
-            switch (s) {
-                case "loginpassword":
-                    dataOutputStream.writeUTF("Поздравляем! Вы залогинились!");
-                break;
-                default:
-                    dataOutputStream.writeUTF("Бла-бла!");
+            String msg = dataInputStream.readUTF();
+            System.out.println(msg);
+            String[] data = msg.split("\\s");
+
+            if (data.length == 2) {
+                if (authService.login(data[0], data[1])) dataOutputStream.writeUTF("Поздравляем, Вы залогинились!");
+                else
+                    dataOutputStream.writeUTF("Неправильный логин и/или пароль!");
+            } else {
+                dataOutputStream.writeUTF("Неправильный логин и/или пароль!");
             }
         } catch (IOException e) {
             e.printStackTrace();
