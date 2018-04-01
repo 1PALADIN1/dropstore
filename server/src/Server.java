@@ -7,6 +7,7 @@ public class Server {
     private ServerSocket serverSocket;
     private final static int SERVER_PORT = 5654;
     private AuthService authService;
+    private ClientHandler clientHandler;
 
     public Server() {
         System.out.println("Запуск сервера...");
@@ -20,7 +21,8 @@ public class Server {
 
             while (true) {
                 socket = serverSocket.accept();
-                new ClientHandler(socket, authService); //создаём новую клиентскую сессию
+                clientHandler = new ClientHandler(socket, authService); //создаём новую клиентскую сессию
+                new Thread(clientHandler).start();
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -57,7 +57,7 @@ public class DBManager {
 
 
     public void insert(String tableName, String ... params) {
-        
+
     }
 
     public void update() {
