@@ -6,6 +6,7 @@ public class DBManager {
     //класс для управления подключениями к БД
     private Connection connection;
     private PreparedStatement preparedStatement;
+    private String logTableName; //название таблицы для логирования
 
     public DBManager() {
         try {
@@ -46,8 +47,17 @@ public class DBManager {
         return false;
     }
 
-    public void insert() {
+    public void setLogTableName(String logTableName) {
+        this.logTableName = logTableName;
+    }
 
+    public void log(String logMessage) {
+        //логирование данных в таблицу
+    }
+
+
+    public void insert(String tableName, String ... params) {
+        
     }
 
     public void update() {
