@@ -26,9 +26,11 @@ public class LoginController {
 
     public void login() {
         try {
-            socket = new Socket(SERVER_IP, SERVER_PORT);
-            dataInputStream = new DataInputStream(socket.getInputStream());
-            dataOutputStream = new DataOutputStream(socket.getOutputStream());
+            if (socket == null || socket.isClosed()) {
+                socket = new Socket(SERVER_IP, SERVER_PORT);
+                dataInputStream = new DataInputStream(socket.getInputStream());
+                dataOutputStream = new DataOutputStream(socket.getOutputStream());
+            }
 
             String msg = "/auth " + loginField.getText() + " " + passField.getText(); //временно для отладки
             dataOutputStream.writeUTF(msg);
@@ -39,6 +41,7 @@ public class LoginController {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            /*
             try {
                 if (dataInputStream != null) dataInputStream.close();
                 if (dataOutputStream != null) dataOutputStream.close();
@@ -46,6 +49,7 @@ public class LoginController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            */
         }
     }
 
