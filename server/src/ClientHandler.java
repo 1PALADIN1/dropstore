@@ -8,6 +8,7 @@ public class ClientHandler extends Thread {
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
     private AuthService authService;
+    private Command command;
 
     public ClientHandler(Socket socket, AuthService authService) {
         this.socket = socket;
@@ -23,13 +24,26 @@ public class ClientHandler extends Thread {
             System.out.println(msg);
             String[] data = msg.split("\\s");
 
-            if (data.length == 2) {
-                if (authService.login(data[0], data[1])) dataOutputStream.writeUTF("Поздравляем, Вы залогинились!");
-                else
-                    dataOutputStream.writeUTF("Неправильный логин и/или пароль!");
+            if (data.length >= 2) {
+                command = Command.getCommand(data[0]);
+                switch (command) {
+                    case AUTH: {
+                        if (data.length == 3) {
+                            if (authService.login(data[1], data[2])) dataOutputStream.writeUTF("Поздравляем, Вы залогинились!");
+                            else
+                                dataOutputStream.writeUTF("Неправильный логин и/или пароль!");
+                        }
+                        else
+                            dataOutputStream.writeUTF("Неверное количество параметров на вход");
+                    }
+                    break;
+                    default:
+                        dataOutputStream.writeUTF("Команда не распознана, обратитесь к администратору.");
+                }
             } else {
                 dataOutputStream.writeUTF("Неправильный логин и/или пароль!");
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
