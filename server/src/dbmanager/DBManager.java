@@ -33,8 +33,9 @@ public class DBManager {
     }
 
     //проверка на существование записей
-    public boolean checkExistence (String preparedQuery, String ... params) {
+    public boolean checkExistence (String tableName, String whereExpression, String ... params) {
         try {
+            String preparedQuery = "SELECT * FROM " + tableName + " WHERE " + whereExpression;
             preparedStatement = connection.prepareStatement(preparedQuery);
             for (int i = 0; i < params.length; i++) {
                 preparedStatement.setString(i+1, params[i]);
@@ -53,6 +54,7 @@ public class DBManager {
 
     public void log(String logMessage) {
         //логирование данных в таблицу
+        if (logTableName == null || logTableName.isEmpty()) System.out.println("Таблица для логирования не задана");
     }
 
 
