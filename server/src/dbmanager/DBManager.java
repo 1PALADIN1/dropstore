@@ -2,12 +2,12 @@ package dbmanager;
 
 import java.sql.*;
 
-class DBManager {
+public class DBManager {
     //класс для управления подключениями к БД
     private Connection connection;
     private PreparedStatement preparedStatement;
 
-    DBManager() {
+    public DBManager() {
         try {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:main.db");

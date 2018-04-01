@@ -1,4 +1,4 @@
-package dbmanager;
+import dbmanager.DBManager;
 
 public class AuthService {
     //класс для работы с клиентскими сессиями
