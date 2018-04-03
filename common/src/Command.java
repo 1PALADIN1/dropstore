@@ -1,6 +1,6 @@
 public enum Command {
     //команды
-    REG("/reg"), AUTH("/auth"), LS("/ls"), UPLOAD("/upload"), DOWNLOAD("/upload"), DELETE("/del"), NONE("/none");
+    REG("/reg"), AUTH("/auth"), AUTHOK("/authok"), LS("/ls"), UPLOAD("/upload"), DOWNLOAD("/upload"), DELETE("/del"), NONE("/none");
 
     private String commandString;
 
@@ -16,6 +16,8 @@ public enum Command {
         switch (commandCode) {
             case "/reg": return REG;
             case "/auth": return AUTH;
+            case "/authok": return AUTHOK;
+            case "/ls": return LS;
             default:
                 return NONE; //команда не распознана
         }
