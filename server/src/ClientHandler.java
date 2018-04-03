@@ -39,13 +39,13 @@ public class ClientHandler implements Runnable {
                     //если клиент не авторизован
                     if (data.length == 3 && command == Command.AUTH) {
                         if (authService.login(data[1], data[2])) {
-                            dataOutputStream.writeUTF("Поздравляем, Вы залогинились!");
+                            dataOutputStream.writeUTF(Command.AUTHOK.getCommandString());
                             login = data[1];
                             System.out.println("Пользователь " + login + " авторизовался в системе");
                             isAuth = true;
 
                         } else {
-                            dataOutputStream.writeUTF("Неправильный логин и/или пароль!");
+                            dataOutputStream.writeUTF(Command.AUTHERROR.getCommandString());
                         }
                     } else {
                         dataOutputStream.writeUTF("Команда не распознана, обратитесь к администратору.");

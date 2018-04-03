@@ -37,13 +37,22 @@ public class LoginController {
             String msg = "/auth " + loginField.getText() + " " + passField.getText(); //временно для отладки
             dataOutputStream.writeUTF(msg);
 
-            String[] data = dataInputStream.readUTF().split("\\s");
+            msg = dataInputStream.readUTF();
 
-
-            showAlert();
-
-            sceneManager = new SceneManager();
-            sceneManager.changePrimaryStage("templates/filemanager.fxml", "File Manager");
+            //запрос на авторизацию
+            switch (msg) {
+                //временные заглушки
+                case "/authok": {
+                    showAlert("Поздравляем! Вы залогинились.");
+                    sceneManager = new SceneManager();
+                    sceneManager.changePrimaryStage("templates/filemanager.fxml", "File Manager");
+                }
+                    break;
+                case "/autherror": showAlert("Неправильный логин и/или пароль");
+                    break;
+                default:
+                    showAlert("Команда не распознана");
+            }
 
         } catch (ConnectException e) {
             showAlert("Не удалось подключиться к серверу, возможно, сервер недоступен.");
