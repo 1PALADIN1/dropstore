@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import scenemanager.SceneManager;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -17,6 +18,7 @@ public class LoginController {
     private static final int SERVER_PORT = 5654;
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
+    private SceneManager sceneManager;
 
     //контроллы
     @FXML
@@ -34,11 +36,20 @@ public class LoginController {
 
             String msg = "/auth " + loginField.getText() + " " + passField.getText(); //временно для отладки
             dataOutputStream.writeUTF(msg);
-            showAlert(dataInputStream.readUTF());
+
+            String[] data = dataInputStream.readUTF().split("\\s");
+
+
+            showAlert();
+
+            sceneManager = new SceneManager();
+            sceneManager.changePrimaryStage("templates/filemanager.fxml", "File Manager");
 
         } catch (ConnectException e) {
             showAlert("Не удалось подключиться к серверу, возможно, сервер недоступен.");
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             /*
