@@ -1,4 +1,4 @@
-package dbmanager;
+import dbmanager.DBManager;
 
 public class AuthService {
     //класс для работы с клиентскими сессиями
@@ -9,7 +9,7 @@ public class AuthService {
     }
 
     public synchronized boolean login(String login, String password) {
-        return dbManager.checkExistence("SELECT * FROM users WHERE login = ? and password = ?", login, password);
+        return dbManager.checkExistence("users", "login = ? and password = ?", login, password);
     }
 
     public void close() {

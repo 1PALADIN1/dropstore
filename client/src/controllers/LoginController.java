@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import scenemanager.SceneManager;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -17,6 +18,7 @@ public class LoginController {
     private static final int SERVER_PORT = 5654;
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
+    private SceneManager sceneManager;
 
     //контроллы
     @FXML
@@ -26,19 +28,40 @@ public class LoginController {
 
     public void login() {
         try {
-            socket = new Socket(SERVER_IP, SERVER_PORT);
-            dataInputStream = new DataInputStream(socket.getInputStream());
-            dataOutputStream = new DataOutputStream(socket.getOutputStream());
+            if (socket == null || socket.isClosed()) {
+                socket = new Socket(SERVER_IP, SERVER_PORT);
+                dataInputStream = new DataInputStream(socket.getInputStream());
+                dataOutputStream = new DataOutputStream(socket.getOutputStream());
+            }
 
-            String msg = loginField.getText() + " " + passField.getText(); //временно для отладки
+            String msg = "/auth " + loginField.getText() + " " + passField.getText(); //временно для отладки
             dataOutputStream.writeUTF(msg);
-            showAlert(dataInputStream.readUTF());
+
+            msg = dataInputStream.readUTF();
+
+            //запрос на авторизацию
+            switch (msg) {
+                //временные заглушки
+                case "/authok": {
+                    showAlert("Поздравляем! Вы залогинились.");
+                    sceneManager = new SceneManager();
+                    sceneManager.changePrimaryStage("templates/filemanager.fxml", "File Manager");
+                }
+                    break;
+                case "/autherror": showAlert("Неправильный логин и/или пароль");
+                    break;
+                default:
+                    showAlert("Команда не распознана");
+            }
 
         } catch (ConnectException e) {
             showAlert("Не удалось подключиться к серверу, возможно, сервер недоступен.");
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
+            /*
             try {
                 if (dataInputStream != null) dataInputStream.close();
                 if (dataOutputStream != null) dataOutputStream.close();
@@ -46,6 +69,7 @@ public class LoginController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            */
         }
     }
 
