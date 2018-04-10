@@ -11,6 +11,7 @@ public class ClientHandler implements Runnable {
     private Command command;
     private boolean isAuth; //авторизован ли пользователь
     private String login;
+    private SessionManager sessionManager;
 
     public ClientHandler(Socket socket, AuthService authService) {
         this.socket = socket;
@@ -22,6 +23,7 @@ public class ClientHandler implements Runnable {
         try {
             dataInputStream = new DataInputStream(socket.getInputStream());
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
+            sessionManager = new SessionManager(); //TODO сделать один на весь проект (либо сделать Singleton для DBManager)
 
             while (true) {
                 String msg = dataInputStream.readUTF();
@@ -43,12 +45,18 @@ public class ClientHandler implements Runnable {
                                 //byte[] fileBytes = new byte[dataInputStream.available()];
                                 //dataInputStream.read(fileBytes);
 
+                                if (dataInputStream.read() != -1) {
+                                    byte[] fileBytes = new byte[dataInputStream.available()];
+                                    dataInputStream.read(fileBytes);
+                                    sessionManager.uploadFileOnServer(login, data[1], fileBytes);
+                                }
+
                                 //тест передачи файлов
-                                int curByte;
+                                /*int curByte;
                                 while ((curByte = dataInputStream.read()) != -1) {
                                     System.out.print((char) curByte);
                                     if (dataInputStream.available() == 0) break;
-                                }
+                                }*/
                             }
                             break;
                             default:
