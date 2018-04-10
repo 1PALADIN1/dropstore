@@ -30,10 +30,17 @@ public class ClientHandler implements Runnable {
                 command = Command.getCommand(data[0]);
 
                 if (isAuth) {
-                    dataOutputStream.writeUTF("Вы в сети");
+
                     //операции для авторизованного клиента
                     if (data.length >= 2) {
-
+                        switch (command) {
+                            case LS: {
+                                dataOutputStream.writeUTF("file1|file2|file3|dir1|dir2");
+                            }
+                            break;
+                            default:
+                                dataOutputStream.writeUTF("Команда не распознана, обратитесь к администратору.");
+                        }
                     }
                 } else {
                     //если клиент не авторизован
