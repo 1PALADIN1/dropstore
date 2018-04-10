@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FileManagerController">
    <children>
-      <TextArea prefHeight="600.0" prefWidth="800.0" />
+      <HBox prefWidth="200.0">
+         <children>
+            <Button mnemonicParsing="false" text="Получить список" onAction="#getLS"/>
+            <Button mnemonicParsing="false" text="Загрузить файл" onAction="#sendFileToServer"/>
+            <Button mnemonicParsing="false" text="Скачать файл" />
+         </children>
+      </HBox>
+      <TextArea fx:id="textArea" prefHeight="600.0" prefWidth="800.0" />
    </children>
 </VBox>
