@@ -38,6 +38,19 @@ public class ClientHandler implements Runnable {
                                 dataOutputStream.writeUTF("file1|file2|file3|dir1|dir2");
                             }
                             break;
+                            case UPLOAD: {
+                                dataOutputStream.writeUTF(Command.CONTINUE.getCommandString());
+                                //byte[] fileBytes = new byte[dataInputStream.available()];
+                                //dataInputStream.read(fileBytes);
+
+                                //тест передачи файлов
+                                int curByte;
+                                while ((curByte = dataInputStream.read()) != -1) {
+                                    System.out.print((char) curByte);
+                                    if (dataInputStream.available() == 0) break;
+                                }
+                            }
+                            break;
                             default:
                                 dataOutputStream.writeUTF("Команда не распознана, обратитесь к администратору.");
                         }

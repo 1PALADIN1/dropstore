@@ -17,4 +17,11 @@ public class FileManagerController {
             }
         }
     }
+
+    public void sendFileToServer() {
+        session = ClientApp.getSession();
+        if (session != null) {
+            session.sendFileToServer("test.txt");
+        }
+    }
 }

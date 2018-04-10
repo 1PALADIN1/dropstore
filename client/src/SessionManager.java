@@ -1,9 +1,6 @@
 import scenemanager.SceneManager;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 public class SessionManager {
@@ -55,6 +52,33 @@ public class SessionManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    //отправка файла на сервер
+    public void sendFileToServer(String fileName) {
+        String msg = Command.UPLOAD.getCommandString() + " " + fileName;
+        FileInputStream fileInputStream = null;
+        try {
+            dataOutputStream.writeUTF(msg);
+            msg = dataInputStream.readUTF();
+            if (msg.equals(Command.CONTINUE.getCommandString())) {
+                //File file = new File("download\\test.txt");
+                //BufferedInputStream bis = new BufferedInputStream(new FileInputStream("download\\test.txt"));
+                fileInputStream = new FileInputStream("download\\test.txt");
+                byte[] fileBytes = new byte[fileInputStream.available()];
+                fileInputStream.read(fileBytes);
+                dataOutputStream.write(fileBytes);
+            } //TODO добавить обработку ошибки от сервера
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fileInputStream != null) fileInputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     public void closeConnection() {

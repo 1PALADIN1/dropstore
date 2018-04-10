@@ -10,7 +10,7 @@
       <HBox prefWidth="200.0">
          <children>
             <Button mnemonicParsing="false" text="Получить список" onAction="#getLS"/>
-            <Button mnemonicParsing="false" text="Загрузить файл" />
+            <Button mnemonicParsing="false" text="Загрузить файл" onAction="#sendFileToServer"/>
             <Button mnemonicParsing="false" text="Скачать файл" />
          </children>
       </HBox>
