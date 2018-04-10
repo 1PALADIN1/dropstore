@@ -42,9 +42,13 @@ public class ClientApp extends Application {
         }
     }
 
-    public static SessionManager getSession() throws IOException {
+    public static SessionManager getSession() {
         //при повторной попытке подключения
-        if (sessionManager == null) sessionManager = new SessionManager(SERVER_IP, SERVER_PORT);
+        if (sessionManager == null) try {
+            sessionManager = new SessionManager(SERVER_IP, SERVER_PORT);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return sessionManager;
     }
 }
