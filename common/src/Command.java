@@ -1,6 +1,6 @@
 public enum Command {
     //команды
-    REG("/reg"), AUTH("/auth"), AUTHOK("/authok"), AUTHERROR("/autherror"), LS("/ls"), UPLOAD("/upload"), DOWNLOAD("/upload"), DELETE("/del"), NONE("/none");
+    REG("/reg"), AUTH("/auth"), AUTHOK("/authok"), AUTHERROR("/autherror"), LS("/ls"), UPLOAD("/upload"), DOWNLOAD("/download"), DELETE("/del"), CONTINUE("/continue"), NONE("/none");
 
     private String commandString;
 
@@ -18,7 +18,8 @@ public enum Command {
             case "/auth": return AUTH; //запрос на авторизацию
             case "/authok": return AUTHOK; //авторизация успешна
             case "/autherror": return AUTHERROR; //ошибки при авторизации
-            case "/ls": return LS;
+            case "/ls": return LS; //список файлов
+            case "/continue": return CONTINUE; //продолжить выполнение (например, сервер отсылает эту команду, когда готов принимать файлы)
             default:
                 return NONE; //команда не распознана
         }
