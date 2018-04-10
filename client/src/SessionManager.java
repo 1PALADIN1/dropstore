@@ -43,6 +43,20 @@ public class SessionManager {
         }
     }
 
+    //получение списка файлов относительно директории dir
+    public String[] getLS(String dir) {
+        String msg = "/ls " + dir;
+        try {
+            dataOutputStream.writeUTF(msg);
+            msg = dataInputStream.readUTF();
+
+            return msg.split("\\|");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public void closeConnection() {
 
     }
