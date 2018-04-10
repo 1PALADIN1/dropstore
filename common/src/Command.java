@@ -20,6 +20,7 @@ public enum Command {
             case "/autherror": return AUTHERROR; //ошибки при авторизации
             case "/ls": return LS; //список файлов
             case "/continue": return CONTINUE; //продолжить выполнение (например, сервер отсылает эту команду, когда готов принимать файлы)
+            case "/upload": return UPLOAD;
             default:
                 return NONE; //команда не распознана
         }
