@@ -86,7 +86,16 @@ public class DBManager {
 
     }
 
-    public void delete() {
-
+    public void delete(String tableName, String whereExpression, String ... params) {
+        String preparedQuery = "DELETE FROM " + tableName + " WHERE " + whereExpression;
+        try {
+            preparedStatement = connection.prepareStatement(preparedQuery);
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setString(i+1, params[i]);
+            }
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
