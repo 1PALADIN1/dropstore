@@ -15,4 +15,8 @@ public class AuthService {
     public void close() {
         dbManager.disconnect();
     }
+
+    public DBManager getDBConnection() {
+        return dbManager;
+    }
 }

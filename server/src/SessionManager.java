@@ -8,9 +8,11 @@ import java.io.IOException;
 public class SessionManager {
     private DBManager dbManager;
     private FileOutputStream fileOut;
+    private AuthService authService;
 
-    public SessionManager() {
-        dbManager = new DBManager();
+    public SessionManager(AuthService authService) {
+        this.authService = authService;
+        this.dbManager = authService.getDBConnection();
     }
 
     public void uploadFileOnServer(String login, String fileName, byte[] fileBytes) {
@@ -27,6 +29,10 @@ public class SessionManager {
                 file.createNewFile();
                 fileOut = new FileOutputStream("share//" + login + "//" + fileName);
                 fileOut.write(fileBytes);
+
+                //вставляем данные в таблицу
+                dbManager.insert("files", new String[] { "user_id", "file_path", "file_name", "file_type" },
+                        new String[] { "1", "share//" + login + "//", fileName, "1" });
             }
         } catch (FileNotFoundException e) {
             System.out.println("Файл не найден: " + e.getMessage());
@@ -34,7 +40,7 @@ public class SessionManager {
             e.printStackTrace();
         } finally {
             try {
-                fileOut.close();
+                if (fileOut != null) fileOut.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
