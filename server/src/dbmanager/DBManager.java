@@ -58,8 +58,28 @@ public class DBManager {
     }
 
 
-    public void insert(String tableName, String ... params) {
+    //вставка новой записи в таблицу
+    public void insert(String tableName, String[] columns, String[] params) {
+        if (columns.length > 0 && params.length > 0 && columns.length == params.length) { //TODO добвить exception
+            StringBuilder columnString = new StringBuilder(columns[0]);
+            StringBuilder paramString = new StringBuilder("?");
+            for (int i = 1; i < columns.length; i++) {
+                columnString.append(", ").append(columns[i]);
+                paramString.append(", ").append("?");
+            }
+            StringBuilder preparedQuery = new StringBuilder("INSERT INTO " + tableName + " (" + columnString + ")"
+                                                            + " VALUES (" + paramString + ")");
 
+            try {
+                preparedStatement = connection.prepareStatement(preparedQuery.toString());
+                for (int i = 0; i < params.length; i++) {
+                    preparedStatement.setString(i+1, params[i]);
+                }
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void update() {
