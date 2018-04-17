@@ -21,6 +21,7 @@ public enum Command {
             case "/ls": return LS; //список файлов
             case "/continue": return CONTINUE; //продолжить выполнение (например, сервер отсылает эту команду, когда готов принимать файлы)
             case "/upload": return UPLOAD;
+            case "/del": return DELETE;
             default:
                 return NONE; //команда не распознана
         }

@@ -23,7 +23,7 @@ public class ClientHandler implements Runnable {
         try {
             dataInputStream = new DataInputStream(socket.getInputStream());
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            sessionManager = new SessionManager(); //TODO сделать один на весь проект (либо сделать Singleton для DBManager)
+            sessionManager = new SessionManager(authService); //TODO сделать один на весь проект (либо сделать Singleton для DBManager)
 
             while (true) {
                 String msg = dataInputStream.readUTF();
@@ -42,21 +42,16 @@ public class ClientHandler implements Runnable {
                             break;
                             case UPLOAD: {
                                 dataOutputStream.writeUTF(Command.CONTINUE.getCommandString());
-                                //byte[] fileBytes = new byte[dataInputStream.available()];
-                                //dataInputStream.read(fileBytes);
 
                                 if (dataInputStream.read() != -1) {
                                     byte[] fileBytes = new byte[dataInputStream.available()];
                                     dataInputStream.read(fileBytes);
                                     sessionManager.uploadFileOnServer(login, data[1], fileBytes);
                                 }
-
-                                //тест передачи файлов
-                                /*int curByte;
-                                while ((curByte = dataInputStream.read()) != -1) {
-                                    System.out.print((char) curByte);
-                                    if (dataInputStream.available() == 0) break;
-                                }*/
+                            }
+                            break;
+                            case DELETE: {
+                                sessionManager.deleteFileFromServer(login, data[1], data[2]);
                             }
                             break;
                             default:

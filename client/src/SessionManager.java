@@ -78,7 +78,16 @@ public class SessionManager {
                 e.printStackTrace();
             }
         }
+    }
 
+    //удаление файла
+    public void deleteFileFromServer(String filePath, String fileName) {
+        String msg = "/del " + filePath + " " + fileName;
+        try {
+            dataOutputStream.writeUTF(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void closeConnection() {
