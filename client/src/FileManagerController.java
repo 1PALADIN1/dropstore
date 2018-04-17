@@ -24,4 +24,11 @@ public class FileManagerController {
             session.sendFileToServer("test.txt");
         }
     }
+
+    public void deleteFile() {
+        session = ClientApp.getSession();
+        if (session != null) {
+            session.deleteFileFromServer("root", "test.txt");
+        }
+    }
 }

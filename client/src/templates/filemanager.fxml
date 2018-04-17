@@ -9,9 +9,10 @@
    <children>
       <HBox prefWidth="200.0">
          <children>
-            <Button mnemonicParsing="false" text="Получить список" onAction="#getLS"/>
-            <Button mnemonicParsing="false" text="Загрузить файл" onAction="#sendFileToServer"/>
+            <Button mnemonicParsing="false" onAction="#getLS" text="Получить список" />
+            <Button mnemonicParsing="false" onAction="#sendFileToServer" text="Загрузить файл" />
             <Button mnemonicParsing="false" text="Скачать файл" />
+            <Button mnemonicParsing="false" onAction="#deleteFile" text="Удалить файл" />
          </children>
       </HBox>
       <TextArea fx:id="textArea" prefHeight="600.0" prefWidth="800.0" />
