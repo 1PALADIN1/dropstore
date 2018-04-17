@@ -47,6 +47,16 @@ public class SessionManager {
         }
     }
 
+    public void deleteFileFromServer(String login, String filePath, String fileName) {
+        if (filePath.equals("root")) filePath = "";
+        File file = new File("share//" + login + "//" + filePath + fileName);
+        if (file.exists()) {
+            if (file.delete()) {
+                dbManager.delete("files", "file_path = ? AND file_name = ?", "share//" + login + "//" + filePath, fileName);
+            }
+        }
+    }
+
     public void close() {
         dbManager.disconnect();
     }
