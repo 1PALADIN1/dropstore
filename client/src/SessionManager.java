@@ -33,10 +33,24 @@ public class SessionManager {
         //запрос на авторизацию
         switch (msg) {
             //временные заглушки
-            case "/authok": return true;
-            case "/autherror": return false;
+            case "/ok": return true;
+            case "/error": return false;
             default:
                 throw new IOException("Команда не распознана"); //TODO сделать отдельный класс для своих исключений
+        }
+    }
+
+    public boolean regUser(String login, String password) throws IOException {
+        String msg = Command.REG.getCommandString() + " " + login + " " + password;
+        dataOutputStream.writeUTF(msg);
+        msg = dataInputStream.readUTF();
+
+        switch (msg) {
+            //временные заглушки
+            case "/ok": return true;
+            case "/error": return false;
+            default:
+                throw new IOException("Команда не распознана");
         }
     }
 
