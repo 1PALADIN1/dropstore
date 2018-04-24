@@ -60,15 +60,29 @@ public class ClientHandler implements Runnable {
                     }
                 } else {
                     //если клиент не авторизован
-                    if (data.length == 3 && command == Command.AUTH) {
-                        if (authService.login(data[1], data[2])) {
-                            dataOutputStream.writeUTF(Command.AUTHOK.getCommandString());
-                            login = data[1];
-                            System.out.println("Пользователь " + login + " авторизовался в системе");
-                            isAuth = true;
-
+                    if (data.length == 3) {
+                        if (command == Command.AUTH) {
+                            if (authService.login(data[1], data[2])) {
+                                dataOutputStream.writeUTF(Command.OK.getCommandString());
+                                login = data[1];
+                                System.out.println("Пользователь " + login + " авторизовался в системе");
+                                isAuth = true;
+                            } else {
+                                dataOutputStream.writeUTF(Command.ERROR.getCommandString() + " Ошибка авторизации (проверьте логин и пароль)");
+                            }
                         } else {
-                            dataOutputStream.writeUTF(Command.AUTHERROR.getCommandString());
+                            if (command == Command.REG) {
+                                if (authService.regUser(data[1], data[2])) {
+                                    dataOutputStream.writeUTF(Command.OK.getCommandString() + " Пользователь успешно зарегестрирован!");
+                                    login = data[1];
+                                    System.out.println("Пользователь " + login + " зарегистрировался в системе");
+                                    isAuth = true;
+                                } else {
+                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + " Ошибка регистрации, такой пользователь уже существует в системе");
+                                }
+                            } else {
+                                dataOutputStream.writeUTF("Команда не распознана, обратитесь к администратору.");
+                            }
                         }
                     } else {
                         dataOutputStream.writeUTF("Команда не распознана, обратитесь к администратору.");

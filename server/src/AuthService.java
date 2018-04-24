@@ -12,6 +12,15 @@ public class AuthService {
         return dbManager.checkExistence("users", "login = ? and password = ?", login, password);
     }
 
+    //регистрация нового пользователя
+    public boolean regUser(String login, String password) {
+        if (dbManager.checkExistence("users", "login = ?", login)) return false;
+        else {
+            dbManager.insert("users", new String[] { "login", "password" }, new String[] { login, password });
+            return true;
+        }
+    }
+
     public void close() {
         dbManager.disconnect();
     }
