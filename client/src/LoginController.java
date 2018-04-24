@@ -42,6 +42,31 @@ public class LoginController {
         }
     }
 
+    //TODO вынести в отдельный контроллер со своим представлением
+    public void registration() {
+        try {
+            session = ClientApp.getSession();
+            if (session != null) {
+                if (session.regUser(loginField.getText(), passField.getText())) {
+                    showAlert("Пользователь успешно зарегистрировался!");
+                    sceneManager = new SceneManager();
+                    sceneManager.changePrimaryStage("templates/filemanager.fxml", "File Manager");
+
+                    //создание дефолтной папки для пользовательских загрузок
+                    File folder = new File("download");
+                    if (!folder.exists()) folder.mkdir();
+                } else {
+                    showAlert("Такой пользователь уже есть в системе");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void showAlert(String message) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);

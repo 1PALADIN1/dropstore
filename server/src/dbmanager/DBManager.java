@@ -28,8 +28,22 @@ public class DBManager {
         }
     }
 
-    public void query() {
+    public ResultSet query(String tableName, String whereExpression, String ... params) {
+        ResultSet rs = null;
+        try {
+            String preparedQuery = "SELECT * FROM " + tableName + " WHERE " + whereExpression;
+            preparedStatement = connection.prepareStatement(preparedQuery);
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setString(i+1, params[i]);
+            }
 
+            rs = preparedStatement.executeQuery();
+            //if (rs.first()) return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return rs;
     }
 
     //проверка на существование записей

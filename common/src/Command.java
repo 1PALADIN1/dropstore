@@ -1,6 +1,6 @@
 public enum Command {
     //команды
-    REG("/reg"), AUTH("/auth"), AUTHOK("/authok"), AUTHERROR("/autherror"), LS("/ls"), UPLOAD("/upload"), DOWNLOAD("/download"), DELETE("/del"), CONTINUE("/continue"), NONE("/none");
+    REG("/reg"), AUTH("/auth"), OK("/ok"), ERROR("/error"), LS("/ls"), UPLOAD("/upload"), DOWNLOAD("/download"), DELETE("/del"), CONTINUE("/continue"), NONE("/none");
 
     private String commandString;
 
@@ -16,8 +16,8 @@ public enum Command {
         switch (commandCode) {
             case "/reg": return REG; //запрос на регистрацию
             case "/auth": return AUTH; //запрос на авторизацию
-            case "/authok": return AUTHOK; //авторизация успешна
-            case "/autherror": return AUTHERROR; //ошибки при авторизации
+            case "/ok": return OK; //успешное выполнение команды
+            case "/error": return ERROR; //ошибка при выполнении операции
             case "/ls": return LS; //список файлов
             case "/continue": return CONTINUE; //продолжить выполнение (например, сервер отсылает эту команду, когда готов принимать файлы)
             case "/upload": return UPLOAD;

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class SessionManager {
     private DBManager dbManager;
@@ -55,6 +57,28 @@ public class SessionManager {
                 dbManager.delete("files", "file_path = ? AND file_name = ?", "share//" + login + "//" + filePath, fileName);
             }
         }
+    }
+
+    public String getFileList(String login) {
+        String userId = null;
+        StringBuilder outStr = new StringBuilder();
+        ResultSet rs;
+        try {
+            //получение user_id
+            rs = dbManager.query("users", "login = ?", login);
+            if (rs.next()) userId = rs.getString("id");
+
+            rs = dbManager.query("files", "user_id = ?", userId);
+            while (rs.next()) {
+                outStr.append(rs.getString("file_name"));
+                outStr.append("|");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return outStr.toString();
     }
 
     public void close() {
