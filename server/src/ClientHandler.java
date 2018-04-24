@@ -68,17 +68,17 @@ public class ClientHandler implements Runnable {
                                 System.out.println("Пользователь " + login + " авторизовался в системе");
                                 isAuth = true;
                             } else {
-                                dataOutputStream.writeUTF(Command.ERROR.getCommandString() + " Ошибка авторизации (проверьте логин и пароль)");
+                                dataOutputStream.writeUTF(Command.ERROR.getCommandString());
                             }
                         } else {
                             if (command == Command.REG) {
                                 if (authService.regUser(data[1], data[2])) {
-                                    dataOutputStream.writeUTF(Command.OK.getCommandString() + " Пользователь успешно зарегестрирован!");
+                                    dataOutputStream.writeUTF(Command.OK.getCommandString());
                                     login = data[1];
                                     System.out.println("Пользователь " + login + " зарегистрировался в системе");
                                     isAuth = true;
                                 } else {
-                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + " Ошибка регистрации, такой пользователь уже существует в системе");
+                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString());
                                 }
                             } else {
                                 dataOutputStream.writeUTF("Команда не распознана, обратитесь к администратору.");

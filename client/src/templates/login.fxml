@@ -34,7 +34,7 @@
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin></Button>
-            <Button minWidth="75.0" mnemonicParsing="false" text="Регистрация" textAlignment="CENTER">
+            <Button minWidth="75.0" mnemonicParsing="false" text="Регистрация" textAlignment="CENTER" onAction="#registration">
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin></Button>
