@@ -78,7 +78,7 @@ public class SessionManager {
             if (msg.equals(Command.CONTINUE.getCommandString())) {
                 //File file = new File("download\\test.txt");
                 //BufferedInputStream bis = new BufferedInputStream(new FileInputStream("download\\test.txt"));
-                fileInputStream = new FileInputStream("download\\test.txt");
+                fileInputStream = new FileInputStream("download\\1234.txt");
                 byte[] fileBytes = new byte[fileInputStream.available()];
                 fileInputStream.read(fileBytes);
                 dataOutputStream.write(fileBytes);

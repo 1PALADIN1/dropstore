@@ -71,7 +71,7 @@ public class SessionManager {
         }
     }
 
-    public String getFileList(String login) {
+    public String getFileList(String login, String folderId) {
         String userId = null;
         StringBuilder outStr = new StringBuilder();
         ResultSet rs;
@@ -80,7 +80,7 @@ public class SessionManager {
             rs = dbManager.query("users", "login = ?", login);
             if (rs.next()) userId = rs.getString("id");
 
-            rs = dbManager.query("files", "user_id = ?", userId);
+            rs = dbManager.query("files", "user_id = ? and parent_dir_id = ?", userId, folderId);
             while (rs.next()) {
                 outStr.append(rs.getString("file_name"));
                 outStr.append("|");

@@ -10,7 +10,7 @@ public class FileManagerController {
     public void getLS() {
         session = ClientApp.getSession();
         if (session != null) {
-            String[] lsFiles = session.getLS("root");
+            String[] lsFiles = session.getLS("3");
             textArea.clear();
             for (int i = 0; i < lsFiles.length; i++) {
                 textArea.appendText(lsFiles[i] + "\n");
@@ -21,7 +21,7 @@ public class FileManagerController {
     public void sendFileToServer() {
         session = ClientApp.getSession();
         if (session != null) {
-            session.sendFileToServer("test.txt");
+            session.sendFileToServer("1234.txt");
         }
     }
 

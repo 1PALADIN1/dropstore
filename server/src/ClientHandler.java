@@ -37,7 +37,7 @@ public class ClientHandler implements Runnable {
                     if (data.length >= 2) {
                         switch (command) {
                             case LS: {
-                                dataOutputStream.writeUTF(sessionManager.getFileList(login));
+                                dataOutputStream.writeUTF(sessionManager.getFileList(login, data[1]));
                             }
                             break;
                             case UPLOAD: {
