@@ -42,11 +42,10 @@ public class ClientHandler implements Runnable {
                             break;
                             case UPLOAD: {
                                 dataOutputStream.writeUTF(Command.CONTINUE.getCommandString());
-
                                 if (dataInputStream.read() != -1) {
                                     byte[] fileBytes = new byte[dataInputStream.available()];
                                     dataInputStream.read(fileBytes);
-                                    sessionManager.uploadFileOnServer(login, data[1], fileBytes);
+                                    sessionManager.uploadFileOnServer(login, data[1], data[2], fileBytes);
                                 }
                             }
                             break;

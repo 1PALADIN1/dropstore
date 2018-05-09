@@ -70,7 +70,7 @@ public class SessionManager {
 
     //отправка файла на сервер
     public void sendFileToServer(String fileName) {
-        String msg = Command.UPLOAD.getCommandString() + " " + fileName;
+        String msg = Command.UPLOAD.getCommandString() + " " + fileName + " 3";
         FileInputStream fileInputStream = null;
         try {
             dataOutputStream.writeUTF(msg);

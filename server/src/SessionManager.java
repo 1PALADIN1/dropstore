@@ -17,7 +17,7 @@ public class SessionManager {
         this.dbManager = authService.getDBConnection();
     }
 
-    public void uploadFileOnServer(String login, String fileName, byte[] fileBytes) {
+    public void uploadFileOnServer(String login, String fileName, String folderId, byte[] fileBytes) {
         //у каждого пользователя своя папка на сервере
         //для разграничения нужен login
 
@@ -26,15 +26,27 @@ public class SessionManager {
             File rootFolder = new File("share//" + login);
             if (!rootFolder.exists()) rootFolder.mkdirs();
             //создаём сам файл
-            File file = new File("share//" + login + "//" + fileName);
+            File file;
+            if (folderId.equals("")) {
+                file = new File("share//" + login + "//" + fileName);
+            } else {
+                file = new File("share//" + login + "//" + folderId + "_" + fileName);
+            }
             if (!file.exists()) {
                 file.createNewFile();
-                fileOut = new FileOutputStream("share//" + login + "//" + fileName);
+                if (folderId.equals("")) fileOut = new FileOutputStream("share//" + login + "//" + fileName);
+                else
+                    fileOut = new FileOutputStream("share//" + login + "//" + folderId + "_" + fileName);
                 fileOut.write(fileBytes);
 
                 //вставляем данные в таблицу
-                dbManager.insert("files", new String[] { "user_id", "file_path", "file_name", "file_type" },
-                        new String[] { "1", "share//" + login + "//", fileName, "1" });
+                if (folderId.equals("")) {
+                    dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type"},
+                            new String[]{"1", "share//" + login + "//", fileName, "1"});
+                } else {
+                    dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type", "parent_dir_id"},
+                            new String[]{"1", "share//" + login + "//", fileName, "1", folderId});
+                }
             }
         } catch (FileNotFoundException e) {
             System.out.println("Файл не найден: " + e.getMessage());
