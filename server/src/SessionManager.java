@@ -23,23 +23,12 @@ public class SessionManager {
         //для разграничения нужен login
 
         try {
-            //создаём папку для корневого каталога
+            //создаём папку для корневого каталога, если ещё не создана
             File rootFolder = new File("share//" + login);
             if (!rootFolder.exists()) rootFolder.mkdirs();
-            //создаём сам файл
-            File file;
-            if (folderId.equals("")) {
-                file = new File("share//" + login + "//" + fileName);
-            } else {
-                file = new File("share//" + login + "//" + folderId + "_" + fileName);
-            }
-            if (!file.exists()) {
-                file.createNewFile();
-                if (folderId.equals("")) fileOut = new FileOutputStream("share//" + login + "//" + fileName);
-                else
-                    fileOut = new FileOutputStream("share//" + login + "//" + folderId + "_" + fileName);
-                fileOut.write(fileBytes);
 
+            //проверяем на существование в базе
+            if (!dbManager.checkExistence("files", "file_name = ? and parent_dir_id = ?", fileName, folderId)) {
                 //вставляем данные в таблицу
                 if (folderId.equals("")) {
                     dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type"},
@@ -48,6 +37,24 @@ public class SessionManager {
                     dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type", "parent_dir_id"},
                             new String[]{"1", "share//" + login + "//", fileName, "1", folderId});
                 }
+
+                //создаём сам файл
+                File file;
+                if (folderId.equals("")) {
+                    file = new File("share//" + login + "//" + fileName);
+                } else {
+                    file = new File("share//" + login + "//" + folderId + "_" + fileName);
+                }
+                if (!file.exists()) {
+                    file.createNewFile();
+                    if (folderId.equals("")) fileOut = new FileOutputStream("share//" + login + "//" + fileName);
+                    else
+                        fileOut = new FileOutputStream("share//" + login + "//" + folderId + "_" + fileName);
+                    fileOut.write(fileBytes);
+                }
+            } else {
+                //TODO кастомная ошибка
+                throw new IOException("Такой файл уже существует в системе");
             }
         } catch (FileNotFoundException e) {
             System.out.println("Файл не найден: " + e.getMessage());
