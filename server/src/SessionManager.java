@@ -17,6 +17,7 @@ public class SessionManager {
         this.dbManager = authService.getDBConnection();
     }
 
+    //загрузка файла на сервер
     public void uploadFileOnServer(String login, String fileName, String folderId, byte[] fileBytes) {
         //у каждого пользователя своя папка на сервере
         //для разграничения нужен login
@@ -61,6 +62,7 @@ public class SessionManager {
         }
     }
 
+    //удаление файла с сервера и базы
     public void deleteFileFromServer(String login, String filePath, String fileName) {
         if (filePath.equals("root")) filePath = "";
         File file = new File("share//" + login + "//" + filePath + fileName);
@@ -71,6 +73,7 @@ public class SessionManager {
         }
     }
 
+    //получение списка файлов
     public String getFileList(String login, String folderId) {
         String userId = null;
         StringBuilder outStr = new StringBuilder();
@@ -82,7 +85,13 @@ public class SessionManager {
 
             rs = dbManager.query("files", "user_id = ? and parent_dir_id = ?", userId, folderId);
             while (rs.next()) {
+                outStr.append(rs.getString("id"));
+                outStr.append("|");
                 outStr.append(rs.getString("file_name"));
+                outStr.append("|");
+                outStr.append(rs.getString("file_type"));
+                outStr.append("|");
+                outStr.append(rs.getString("parent_dir_id"));
                 outStr.append("|");
             }
 

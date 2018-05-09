@@ -1,8 +1,11 @@
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 
+import java.util.ArrayList;
+
 public class FileManagerController {
     private SessionManager session;
+    private ArrayList<ListItem> fileList;
 
     @FXML
     TextArea textArea;
@@ -10,10 +13,17 @@ public class FileManagerController {
     public void getLS() {
         session = ClientApp.getSession();
         if (session != null) {
+            fileList = new ArrayList<>();
             String[] lsFiles = session.getLS("3");
-            textArea.clear();
             for (int i = 0; i < lsFiles.length; i++) {
-                textArea.appendText(lsFiles[i] + "\n");
+                fileList.add(new ListItem(lsFiles[i], lsFiles[++i], lsFiles[++i], lsFiles[++i]));
+            }
+
+            textArea.clear();
+            for (int i = 0; i < fileList.size(); i++) {
+                textArea.appendText(fileList.get(i).getId() + "\t" + fileList.get(i).getName() + "\t" +
+                        fileList.get(i).getType() + "\t" + fileList.get(i).getParentId() + "\n");
+                //textArea.appendText(fileList.get(i).getName() + "\n");
             }
         }
     }
