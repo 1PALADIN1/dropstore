@@ -14,7 +14,7 @@ public class FileManagerController {
         session = ClientApp.getSession();
         if (session != null) {
             fileList = new ArrayList<>();
-            String[] lsFiles = session.getLS("3");
+            String[] lsFiles = session.getLS("root");
             for (int i = 0; i < lsFiles.length; i++) {
                 fileList.add(new ListItem(lsFiles[i], lsFiles[++i], lsFiles[++i], lsFiles[++i]));
             }
@@ -31,7 +31,18 @@ public class FileManagerController {
     public void sendFileToServer() {
         session = ClientApp.getSession();
         if (session != null) {
-            session.sendFileToServer("1234.txt");
+            session.sendFileToServer("test111.mdm");
+        }
+    }
+
+    public void downloadFileFromServer() {
+        session = ClientApp.getSession();
+        if (session != null) {
+            try {
+                session.downloadFileFromServer("1234.txt", "2");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

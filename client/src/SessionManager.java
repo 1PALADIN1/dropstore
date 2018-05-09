@@ -1,5 +1,3 @@
-import scenemanager.SceneManager;
-
 import java.io.*;
 import java.net.Socket;
 
@@ -78,7 +76,7 @@ public class SessionManager {
             if (msg.equals(Command.CONTINUE.getCommandString())) {
                 //File file = new File("download\\test.txt");
                 //BufferedInputStream bis = new BufferedInputStream(new FileInputStream("download\\test.txt"));
-                fileInputStream = new FileInputStream("download\\1234.txt");
+                fileInputStream = new FileInputStream("download\\test111.mdm");
                 byte[] fileBytes = new byte[fileInputStream.available()];
                 fileInputStream.read(fileBytes);
                 dataOutputStream.write(fileBytes);
@@ -90,6 +88,30 @@ public class SessionManager {
                 if (fileInputStream != null) fileInputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    //скачивание файла с сервера
+    public void downloadFileFromServer(String fileName, String folderId) throws Exception {
+
+        File rootFolder = new File("//download"); //папка для загрузки
+        if (!rootFolder.exists()) rootFolder.mkdirs();
+
+        String msg = Command.DOWNLOAD.getCommandString() + " " + fileName + " " + folderId;
+        dataOutputStream.writeUTF(msg);
+        String[] data = dataInputStream.readUTF().split("\\s");
+
+        if (data[0].equals(Command.ERROR.getCommandString())) throw new Exception(data[1]);
+        if (data[0].equals(Command.CONTINUE.getCommandString())) {
+            if (dataInputStream.read() != -1) {
+                byte[] fileBytes = new byte[dataInputStream.available()];
+                dataInputStream.read(fileBytes);
+
+                File file = new File("download//" + fileName);
+                file.createNewFile();
+                FileOutputStream fileOut = new FileOutputStream("download//" + fileName);
+                fileOut.write(fileBytes);
             }
         }
     }

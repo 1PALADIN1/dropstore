@@ -11,7 +11,7 @@
          <children>
             <Button mnemonicParsing="false" onAction="#getLS" text="Получить список" />
             <Button mnemonicParsing="false" onAction="#sendFileToServer" text="Загрузить файл" />
-            <Button mnemonicParsing="false" text="Скачать файл" />
+            <Button mnemonicParsing="false" onAction="#downloadFileFromServer" text="Скачать файл" />
             <Button mnemonicParsing="false" onAction="#deleteFile" text="Удалить файл" />
          </children>
       </HBox>

@@ -53,6 +53,7 @@ public class ClientHandler implements Runnable {
                                 byte[] fileBytes;
                                 try {
                                     fileBytes = sessionManager.downloadFileFromServer(login, data[1], data[2]);
+                                    dataOutputStream.writeUTF(Command.CONTINUE.getCommandString());
                                     dataOutputStream.write(fileBytes);
                                 } catch (Exception e) {
                                     dataOutputStream.writeUTF(Command.ERROR.getCommandString() + " " + e.getMessage());
