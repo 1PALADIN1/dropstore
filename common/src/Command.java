@@ -20,8 +20,9 @@ public enum Command {
             case "/error": return ERROR; //ошибка при выполнении операции
             case "/ls": return LS; //список файлов
             case "/continue": return CONTINUE; //продолжить выполнение (например, сервер отсылает эту команду, когда готов принимать файлы)
-            case "/upload": return UPLOAD;
-            case "/del": return DELETE;
+            case "/upload": return UPLOAD; //загрузить на сервер
+            case "/download": return DOWNLOAD; //скачать с сервера
+            case "/del": return DELETE; //удалить с сервера
             default:
                 return NONE; //команда не распознана
         }

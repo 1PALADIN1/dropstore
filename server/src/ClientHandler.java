@@ -49,6 +49,17 @@ public class ClientHandler implements Runnable {
                                 }
                             }
                             break;
+                            case DOWNLOAD: {
+                                byte[] fileBytes;
+                                try {
+                                    fileBytes = sessionManager.downloadFileFromServer(login, data[1], data[2]);
+                                    dataOutputStream.write(fileBytes);
+                                } catch (Exception e) {
+                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + " " + e.getMessage());
+                                    System.out.println("Ошибка при отправке файла: " + e.getMessage());
+                                }
+                            }
+                            break;
                             case DELETE: {
                                 sessionManager.deleteFileFromServer(login, data[1], data[2]);
                             }
