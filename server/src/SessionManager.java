@@ -28,7 +28,7 @@ public class SessionManager {
             if (!dbManager.checkExistence("files", "file_name = ? and parent_dir_id = ?", fileName, folderId)) {
                 //вставляем данные в таблицу\
                 //TODO вставить user_id
-                if (folderId.equals("")) {
+                if (folderId.equals("root")) {
                     dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type"},
                             new String[]{"1", "share//" + login + "//", fileName, "1"});
                 } else {
@@ -38,14 +38,14 @@ public class SessionManager {
 
                 //создаём сам файл
                 File file;
-                if (folderId.equals("")) {
+                if (folderId.equals("root")) {
                     file = new File("share//" + login + "//" + fileName);
                 } else {
                     file = new File("share//" + login + "//" + folderId + "_" + fileName);
                 }
                 if (!file.exists()) {
                     file.createNewFile();
-                    if (folderId.equals("")) fileOut = new FileOutputStream("share//" + login + "//" + fileName);
+                    if (folderId.equals("root")) fileOut = new FileOutputStream("share//" + login + "//" + fileName);
                     else
                         fileOut = new FileOutputStream("share//" + login + "//" + folderId + "_" + fileName);
                     fileOut.write(fileBytes);
@@ -73,6 +73,7 @@ public class SessionManager {
         String userId = null;
         ResultSet rs;
 
+        //TODO вынести в отдельный метод
         rs = dbManager.query("users", "login = ?", login);
         if (rs.next()) userId = rs.getString("id");
 
@@ -84,8 +85,11 @@ public class SessionManager {
             //TODO заменить на кастомные
             throw new Exception("Такого файла не существует, обратитесь к администратору");
         }
-        FileInputStream fileInputStream = null;
-        fileInputStream = new FileInputStream("share//" + login + "//" + folderId + "_" + fileName);
+        FileInputStream fileInputStream;
+        if (folderId.equals("root")) fileInputStream = new FileInputStream("share//" + login + "//" + fileName);
+        else
+            fileInputStream = new FileInputStream("share//" + login + "//" + folderId + "_" + fileName);
+
         byte[] fileBytes = new byte[fileInputStream.available()];
         fileInputStream.read(fileBytes);
 
@@ -93,6 +97,7 @@ public class SessionManager {
     }
 
     //удаление файла с сервера и базы
+    //TODO поправить метод
     public void deleteFileFromServer(String login, String filePath, String fileName) {
         if (filePath.equals("root")) filePath = "";
         File file = new File("share//" + login + "//" + filePath + fileName);
