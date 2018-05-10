@@ -43,6 +43,8 @@ public class FileManagerController {
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         parentColumn.setCellValueFactory(new PropertyValueFactory<>("parentId"));
 
+        fileTable.setEditable(false);
+
         session = ClientApp.getSession();
         if (session != null) {
             getLS();
