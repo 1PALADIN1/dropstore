@@ -26,4 +26,20 @@ public class ListItem {
     public String getParentId() {
         return parentId;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
 }
