@@ -67,7 +67,7 @@ public class SessionManager {
     }
 
     //отправка файла на сервер
-    public void sendFileToServer(String fileName) {
+    public void sendFileToServer(String fileName, File file) {
         String msg = Command.UPLOAD.getCommandString() + " " + fileName + " 3";
         FileInputStream fileInputStream = null;
         try {
@@ -76,7 +76,7 @@ public class SessionManager {
             if (msg.equals(Command.CONTINUE.getCommandString())) {
                 //File file = new File("download\\test.txt");
                 //BufferedInputStream bis = new BufferedInputStream(new FileInputStream("download\\test.txt"));
-                fileInputStream = new FileInputStream("download\\test111.mdm");
+                fileInputStream = new FileInputStream(file);
                 byte[] fileBytes = new byte[fileInputStream.available()];
                 fileInputStream.read(fileBytes);
                 dataOutputStream.write(fileBytes);

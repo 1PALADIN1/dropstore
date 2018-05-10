@@ -1,11 +1,15 @@
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -96,10 +100,15 @@ public class FileManagerController {
         }
     }
 
-    public void sendFileToServer() {
+    public void sendFileToServer(ActionEvent actionEvent) {
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Выберете файл");
+        File chooseFile = fileChooser.showOpenDialog(((Node)actionEvent.getSource()).getScene().getWindow());
+
         session = ClientApp.getSession();
         if (session != null) {
-            session.sendFileToServer("test111.mdm");
+            session.sendFileToServer(chooseFile.getName(), chooseFile);
         }
     }
 
