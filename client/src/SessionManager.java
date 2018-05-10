@@ -80,6 +80,15 @@ public class SessionManager {
                 byte[] fileBytes = new byte[fileInputStream.available()];
                 fileInputStream.read(fileBytes);
                 dataOutputStream.write(fileBytes);
+
+                String[] data = dataInputStream.readUTF().split("\\|");
+                switch (Command.getCommand(data[0])) {
+                    case ERROR: throw new IOException(data[1]);
+                    case OK: {
+                        System.out.println(data[1]);
+                    }
+                    break;
+                }
             } //TODO добавить обработку ошибки от сервера
         } catch (IOException e) {
             e.printStackTrace();

@@ -101,14 +101,16 @@ public class FileManagerController {
     }
 
     public void sendFileToServer(ActionEvent actionEvent) {
-
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Выберете файл");
         File chooseFile = fileChooser.showOpenDialog(((Node)actionEvent.getSource()).getScene().getWindow());
 
-        session = ClientApp.getSession();
-        if (session != null) {
-            session.sendFileToServer(chooseFile.getName(), chooseFile);
+        if (chooseFile != null) {
+            session = ClientApp.getSession();
+            if (session != null) {
+                session.sendFileToServer(chooseFile.getName(), chooseFile);
+                getLS();
+            }
         }
     }
 

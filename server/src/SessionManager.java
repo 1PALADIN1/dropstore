@@ -48,6 +48,7 @@ public class SessionManager {
                     fileOut = new FileOutputStream("share//" + login + "//" + folderId + "_" + fileName);
                 fileOut.write(fileBytes);
             }
+            if (fileOut != null) fileOut.close();
         } else {
             throw new CustomServerException("Такой файл уже существует в системе");
         }
