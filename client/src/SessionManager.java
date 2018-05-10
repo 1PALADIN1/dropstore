@@ -92,6 +92,25 @@ public class SessionManager {
         }
     }
 
+    public void createDirectory(String dirName) throws IOException {
+        String msg = Command.CREATEDIR.getCommandString() + " " + dirName + " root";
+        dataOutputStream.writeUTF(msg);
+        String[] data = dataInputStream.readUTF().split("\\s");
+
+        //TODO добавить кастомные ошибки
+        switch (Command.getCommand(data[0])) {
+            case OK:
+                System.out.println("Папка успешно создана");
+                break;
+            case ERROR:
+                System.out.println("Ошибка! " + data[1]);
+                break;
+            default:
+                System.out.println("Команда не распознана");
+        }
+
+    }
+
     //скачивание файла с сервера
     public void downloadFileFromServer(String fileName, String folderId) throws Exception {
 

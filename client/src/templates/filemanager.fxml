@@ -13,6 +13,7 @@
             <Button mnemonicParsing="false" onAction="#sendFileToServer" text="Загрузить файл" />
             <Button mnemonicParsing="false" onAction="#downloadFileFromServer" text="Скачать файл" />
             <Button mnemonicParsing="false" onAction="#deleteFile" text="Удалить файл" />
+            <Button mnemonicParsing="false" onAction="#createDirectory" text="Создать папку" />
          </children>
       </HBox>
       <TextArea fx:id="textArea" prefHeight="600.0" prefWidth="800.0" />

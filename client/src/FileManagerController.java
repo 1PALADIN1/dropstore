@@ -1,6 +1,7 @@
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class FileManagerController {
@@ -42,6 +43,18 @@ public class FileManagerController {
                 session.downloadFileFromServer("1234.txt", "2");
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    public void createDirectory() {
+        session = ClientApp.getSession();
+        if (session != null) {
+            try {
+                session.createDirectory("myDir");
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+                //e.printStackTrace();
             }
         }
     }

@@ -1,6 +1,6 @@
 public enum Command {
     //команды
-    REG("/reg"), AUTH("/auth"), OK("/ok"), ERROR("/error"), LS("/ls"), UPLOAD("/upload"), DOWNLOAD("/download"), DELETE("/del"), CONTINUE("/continue"), NONE("/none");
+    REG("/reg"), AUTH("/auth"), OK("/ok"), ERROR("/error"), LS("/ls"), UPLOAD("/upload"), DOWNLOAD("/download"), DELETE("/del"), CONTINUE("/continue"), CREATEDIR("/createdir"), NONE("/none");
 
     private String commandString;
 
@@ -23,6 +23,7 @@ public enum Command {
             case "/upload": return UPLOAD; //загрузить на сервер
             case "/download": return DOWNLOAD; //скачать с сервера
             case "/del": return DELETE; //удалить с сервера
+            case "/createdir": return CREATEDIR; //содание директории на сервере
             default:
                 return NONE; //команда не распознана
         }

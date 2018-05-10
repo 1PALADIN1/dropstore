@@ -61,6 +61,16 @@ public class ClientHandler implements Runnable {
                                 }
                             }
                             break;
+                            case CREATEDIR: {
+                                try {
+                                    sessionManager.createDirectory(login, data[1], data[2]);
+                                    dataOutputStream.writeUTF(Command.OK.getCommandString());
+                                } catch (Exception e) {
+                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + " " + e.getMessage());
+                                    System.out.println("Ошибка при создании директории: " + e.getMessage());
+                                }
+                            }
+                            break;
                             case DELETE: {
                                 sessionManager.deleteFileFromServer(login, data[1], data[2]);
                             }

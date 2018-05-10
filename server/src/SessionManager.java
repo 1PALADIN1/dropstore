@@ -96,6 +96,31 @@ public class SessionManager {
         return fileBytes;
     }
 
+    public void createDirectory(String login, String dirName, String folderId) throws Exception {
+        boolean checkExist;
+        String userId = null;
+        ResultSet rs;
+
+        //TODO вынести в отдельный метод
+        rs = dbManager.query("users", "login = ?", login);
+        if (rs.next()) userId = rs.getString("id");
+
+        if (folderId.equals("root")) checkExist = dbManager.checkExistence("files", "user_id = ? and file_name = ? and parent_dir_id is null", userId, dirName);
+        else
+            checkExist = dbManager.checkExistence("files", "user_id = ? and file_name = ? and parent_dir_id = ?", userId, dirName, folderId);
+
+        if (checkExist) throw new Exception("Такая папка уже существует!");
+        else {
+            if (folderId.equals("root")) {
+                dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type"},
+                        new String[]{userId, "share//" + login + "//", dirName, "2"});
+            } else {
+                dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type", "parent_dir_id"},
+                        new String[]{userId, "share//" + login + "//", dirName, "2", folderId});
+            }
+        }
+    }
+
     //удаление файла с сервера и базы
     //TODO поправить метод
     public void deleteFileFromServer(String login, String filePath, String fileName) {
