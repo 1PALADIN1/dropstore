@@ -15,55 +15,41 @@ public class SessionManager {
     }
 
     //загрузка файла на сервер
-    public void uploadFileOnServer(String login, String fileName, String folderId, byte[] fileBytes) {
+    public void uploadFileOnServer(String login, String fileName, String folderId, byte[] fileBytes) throws CustomServerException, IOException {
         //у каждого пользователя своя папка на сервере
         //для разграничения нужен login
+        //создаём папку для корневого каталога, если ещё не создана
+        File rootFolder = new File("share//" + login);
+        if (!rootFolder.exists()) rootFolder.mkdirs();
 
-        try {
-            //создаём папку для корневого каталога, если ещё не создана
-            File rootFolder = new File("share//" + login);
-            if (!rootFolder.exists()) rootFolder.mkdirs();
-
-            //проверяем на существование в базе
-            if (!dbManager.checkExistence("files", "file_name = ? and parent_dir_id = ?", fileName, folderId)) {
-                //вставляем данные в таблицу\
-                //TODO вставить user_id
-                if (folderId.equals("root")) {
-                    dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type"},
-                            new String[]{"1", "share//" + login + "//", fileName, "1"});
-                } else {
-                    dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type", "parent_dir_id"},
-                            new String[]{"1", "share//" + login + "//", fileName, "1", folderId});
-                }
-
-                //создаём сам файл
-                File file;
-                if (folderId.equals("root")) {
-                    file = new File("share//" + login + "//" + fileName);
-                } else {
-                    file = new File("share//" + login + "//" + folderId + "_" + fileName);
-                }
-                if (!file.exists()) {
-                    file.createNewFile();
-                    if (folderId.equals("root")) fileOut = new FileOutputStream("share//" + login + "//" + fileName);
-                    else
-                        fileOut = new FileOutputStream("share//" + login + "//" + folderId + "_" + fileName);
-                    fileOut.write(fileBytes);
-                }
+        //проверяем на существование в базе
+        if (!dbManager.checkExistence("files", "file_name = ? and parent_dir_id = ?", fileName, folderId)) {
+            //вставляем данные в таблицу\
+            //TODO вставить user_id
+            if (folderId.equals("root")) {
+                dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type"},
+                        new String[]{"1", "share//" + login + "//", fileName, "1"});
             } else {
-                //TODO кастомная ошибка
-                throw new IOException("Такой файл уже существует в системе");
+                dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type", "parent_dir_id"},
+                        new String[]{"1", "share//" + login + "//", fileName, "1", folderId});
             }
-        } catch (FileNotFoundException e) {
-            System.out.println("Файл не найден: " + e.getMessage());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (fileOut != null) fileOut.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+
+            //создаём сам файл
+            File file;
+            if (folderId.equals("root")) {
+                file = new File("share//" + login + "//" + fileName);
+            } else {
+                file = new File("share//" + login + "//" + folderId + "_" + fileName);
             }
+            if (!file.exists()) {
+                file.createNewFile();
+                if (folderId.equals("root")) fileOut = new FileOutputStream("share//" + login + "//" + fileName);
+                else
+                    fileOut = new FileOutputStream("share//" + login + "//" + folderId + "_" + fileName);
+                fileOut.write(fileBytes);
+            }
+        } else {
+            throw new CustomServerException("Такой файл уже существует в системе");
         }
     }
 
