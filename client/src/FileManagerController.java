@@ -54,13 +54,17 @@ public class FileManagerController {
         session = ClientApp.getSession();
         if (session != null) {
             fileList = new ArrayList<>();
-            String[] lsFiles = session.getLS("root");
+            String[] lsFiles = session.getLS("3");
             for (int i = 0; i < lsFiles.length; i++) {
                 fileList.add(new ListItem(lsFiles[i], lsFiles[++i], lsFiles[++i], lsFiles[++i]));
             }
 
             textArea.clear();
             usersData.clear();
+            if (!fileList.get(0).getParentId().equals("null")) {
+                textArea.appendText("0\t..\t2\tnull\n");
+                usersData.add(new ListItem("0", "..", "2", "null"));
+            }
             for (int i = 0; i < fileList.size(); i++) {
                 textArea.appendText(fileList.get(i).getId() + "\t" + fileList.get(i).getName() + "\t" +
                         fileList.get(i).getType() + "\t" + fileList.get(i).getParentId() + "\n");
