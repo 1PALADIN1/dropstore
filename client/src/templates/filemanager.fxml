@@ -12,11 +12,11 @@
    <children>
       <HBox prefWidth="200.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#getLS" text="Получить список" />
-            <Button mnemonicParsing="false" onAction="#sendFileToServer" text="Загрузить файл" />
-            <Button mnemonicParsing="false" onAction="#downloadFileFromServer" text="Скачать файл" />
-            <Button mnemonicParsing="false" onAction="#deleteFile" text="Удалить файл" />
-            <Button mnemonicParsing="false" onAction="#createDirectory" text="Создать папку" />
+            <Button fx:id="buttonRefresh" mnemonicParsing="false" onAction="#getLS" />
+            <Button fx:id="buttonUpload" mnemonicParsing="false" onAction="#sendFileToServer" />
+            <Button fx:id="buttonDownload" mnemonicParsing="false" onAction="#downloadFileFromServer" />
+            <Button fx:id="buttonDelete" mnemonicParsing="false" onAction="#deleteFile" />
+            <Button fx:id="buttonNewFolder" mnemonicParsing="false" onAction="#createDirectory" />
          </children>
       </HBox>
       <TextArea fx:id="textArea" prefHeight="150.0" prefWidth="800.0" />

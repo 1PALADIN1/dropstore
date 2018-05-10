@@ -1,11 +1,10 @@
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,27 +21,44 @@ public class FileManagerController {
     private Label infoLabel;
 
     @FXML
-    private TableView<ListItem> fileTable;
+    private Button buttonRefresh;
+    @FXML
+    private Button buttonUpload;
+    @FXML
+    private Button buttonDownload;
+    @FXML
+    private Button buttonDelete;
+    @FXML
+    private Button buttonNewFolder;
 
+    @FXML
+    private TableView<ListItem> fileTable;
     @FXML
     private TableColumn<ListItem, String> idColumn;
-
     @FXML
     private TableColumn<ListItem, String> typeColumn;
-
     @FXML
     private TableColumn<ListItem, String> nameColumn;
-
     @FXML
     private TableColumn<ListItem, String> parentColumn;
 
     @FXML
     private void initialize() {
+        Image imageRefresh = new Image(getClass().getResourceAsStream("/res/refresh.png"));
+        Image imageUpload = new Image(getClass().getResourceAsStream("/res/upload.png"));
+        Image imageDownload = new Image(getClass().getResourceAsStream("/res/download.png"));
+        Image imageDelete = new Image(getClass().getResourceAsStream("/res/delete.png"));
+        Image imageNewFolder = new Image(getClass().getResourceAsStream("/res/new_folder.png"));
+        buttonRefresh.setGraphic(new ImageView(imageRefresh));
+        buttonUpload.setGraphic(new ImageView(imageUpload));
+        buttonDownload.setGraphic(new ImageView(imageDownload));
+        buttonDelete.setGraphic(new ImageView(imageDelete));
+        buttonNewFolder.setGraphic(new ImageView(imageNewFolder));
+
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         parentColumn.setCellValueFactory(new PropertyValueFactory<>("parentId"));
-
         fileTable.setEditable(false);
 
         session = ClientApp.getSession();
