@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class LoginController {
     private SceneManager sceneManager;
-    private SessionManager session;
+    private ClientSession session;
     private CustomAlert alert;
 
     //контроллы

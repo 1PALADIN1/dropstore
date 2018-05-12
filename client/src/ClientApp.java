@@ -13,7 +13,7 @@ public class ClientApp extends Application {
     private final static int SERVER_PORT = 5654;
     private SceneManager sceneManager;
     private Stage primaryStage;
-    private static SessionManager sessionManager;
+    private static ClientSession sessionManager;
 
     public static void main(String[] args) {
         launch(args);
@@ -36,16 +36,16 @@ public class ClientApp extends Application {
         //инициализаци подключения
         //TODO сделать обработку ошибок отдельным классом
         try {
-            sessionManager = new SessionManager(SERVER_IP, SERVER_PORT);
+            sessionManager = new ClientSession(SERVER_IP, SERVER_PORT);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static SessionManager getSession() {
+    public static ClientSession getSession() {
         //при повторной попытке подключения
         if (sessionManager == null) try {
-            sessionManager = new SessionManager(SERVER_IP, SERVER_PORT);
+            sessionManager = new ClientSession(SERVER_IP, SERVER_PORT);
         } catch (IOException e) {
             e.printStackTrace();
         }

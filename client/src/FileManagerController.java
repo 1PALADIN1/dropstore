@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class FileManagerController {
-    private SessionManager session;
+    private ClientSession session;
     private ArrayList<ListItem> fileList;
     private ObservableList<ListItem> usersData = FXCollections.observableArrayList();
     private CustomAlert alert;

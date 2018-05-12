@@ -1,7 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 
-public class SessionManager {
+public class ClientSession {
     //класс для управления клиентской сессией
     private Socket session;
     private String serverIp;
@@ -11,7 +11,7 @@ public class SessionManager {
     private String currentFolderId = "root";
     private String parentFolderId = "root";
 
-    public SessionManager(String serverIp, int serverPort) throws IOException {
+    public ClientSession(String serverIp, int serverPort) throws IOException {
         this.serverIp = serverIp;
         this.serverPort = serverPort;
         openConnection();
