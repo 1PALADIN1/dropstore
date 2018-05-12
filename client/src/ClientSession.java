@@ -49,36 +49,29 @@ public class ClientSession {
         }
     }
 
-    public boolean regUser(String login, String password) throws IOException { //TODO поправить метод
+    public boolean regUser(String login, String password) throws IOException, CustomClientException { //TODO поправить метод
         String msg = Command.REG.getCommandString() + "|" + login + "|" + password;
         dataOutputStream.writeUTF(msg);
-        msg = dataInputStream.readUTF();
+        String[] data = dataInputStream.readUTF().split("\\|");
 
-        switch (msg) {
-            //временные заглушки
-            case "/ok": return true;
-            case "/error": return false;
+        switch (Command.getCommand(data[0])) {
+            case OK: return true;
+            case ERROR: return false;
             default:
-                throw new IOException("Команда не распознана");
+                throw new CustomClientException("Команда не распознана");
         }
     }
 
     //получение списка файлов относительно директории dir
-    public String[] getLS(String dir) {
+    public String[] getLS(String dir) throws IOException {
         String msg = Command.LS.getCommandString() + "|" + dir;
-        try {
             dataOutputStream.writeUTF(msg);
             msg = dataInputStream.readUTF();
-
             return msg.split("\\|");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     //отправка файла на сервер
-    public void sendFileToServer(String fileName, String folderId, File file) {
+    public void sendFileToServer(String fileName, String folderId, File file) throws IOException, CustomClientException {
         String msg = Command.UPLOAD.getCommandString() + "|" + fileName + "|" + folderId;
         FileInputStream fileInputStream = null;
         try {
@@ -94,39 +87,30 @@ public class ClientSession {
 
                 String[] data = dataInputStream.readUTF().split("\\|");
                 switch (Command.getCommand(data[0])) {
-                    case ERROR: throw new IOException(data[1]);
+                    case ERROR: throw new CustomClientException(data[1]);
                     case OK: {
                         System.out.println(data[1]);
                     }
                     break;
                 }
-            } //TODO добавить обработку ошибки от сервера
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (fileInputStream != null) fileInputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+        } finally {
+            if (fileInputStream != null) fileInputStream.close();
         }
     }
 
-    public void createDirectory(String dirName, String folderId) throws IOException {
+    public void createDirectory(String dirName, String folderId) throws IOException, CustomClientException {
         String msg = Command.CREATEDIR.getCommandString() + "|" + dirName + "|" + folderId;
         dataOutputStream.writeUTF(msg);
         String[] data = dataInputStream.readUTF().split("\\|");
 
-        //TODO добавить кастомные ошибки
         switch (Command.getCommand(data[0])) {
             case OK:
                 System.out.println("Папка успешно создана");
                 break;
-            case ERROR:
-                System.out.println("Ошибка! " + data[1]);
-                break;
+            case ERROR: throw new CustomClientException(data[1]);
             default:
-                System.out.println("Команда не распознана");
+                throw new CustomClientException("Команда не распознана");
         }
     }
 
@@ -155,7 +139,7 @@ public class ClientSession {
     }
 
     //удаление файла
-    public void deleteFileFromServer(String fileName, String folderId, String objectType) throws IOException {
+    public void deleteFileFromServer(String fileName, String folderId, String objectType) throws IOException, CustomClientException {
         String msg = Command.DELETE.getCommandString() + "|" + fileName + "|" + folderId + "|" + objectType;
         dataOutputStream.writeUTF(msg);
         String[] data = dataInputStream.readUTF().split("\\|");
@@ -164,11 +148,9 @@ public class ClientSession {
             case OK:
                 System.out.println(data[1]);
                 break;
-            case ERROR:
-                System.out.println("Ошибка! " + data[1]);
-                break;
+            case ERROR: throw new CustomClientException(data[1]);
             default:
-                System.out.println("Команда не распознана");
+                throw new CustomClientException("Команда не распознана");
         }
     }
 
@@ -191,7 +173,7 @@ public class ClientSession {
         return parentFolderId;
     }
 
-    public String getServerParentFolderId(String folderId) throws IOException {
+    public String getServerParentFolderId(String folderId) throws IOException, CustomClientException {
         String msg = Command.PARENTDIR.getCommandString() + "|" + folderId;
         dataOutputStream.writeUTF(msg);
 
@@ -200,13 +182,10 @@ public class ClientSession {
             case OK:
                 System.out.println(data[1]);
                 return data[1];
-            case ERROR:
-                System.out.println("Ошибка получения родительской папки " + data[1]);
-                return "root";
+            case ERROR: throw new CustomClientException(data[1]);
             default:
-                System.out.println("Команда не распознана");
+                throw new CustomClientException("Команда не распознана");
         }
-        return "root";
     }
 
     public void closeConnection() {

@@ -89,14 +89,21 @@ public class FileManagerController {
 
     public void getLS() {
         fileList = new ArrayList<>();
-        String[] lsFiles = session.getLS(session.getCurrentFolderId());
+        String[] lsFiles = new String[0];
+        try {
+            lsFiles = session.getLS(session.getCurrentFolderId());
+        } catch (IOException e) {
+            alert = new CustomAlert(e.getMessage(), "Ошибка", null, Alert.AlertType.ERROR);
+            alert.showSimpleAlert();
+            e.printStackTrace();
+        }
         for (int i = 0; i < lsFiles.length; i++) {
             if (i + 3 < lsFiles.length) fileList.add(new ListItem(lsFiles[i], lsFiles[++i], lsFiles[++i], lsFiles[++i]));
         }
 
         textArea.clear();
         usersData.clear();
-        if (fileList.size() == 0) {
+        if (fileList.size() == 0 || session.getCurrentFolderId().equals("root")) {
             textArea.appendText("0\t..\t2\tnull\n");
             usersData.add(new ListItem("0", "..", "2", session.getCurrentFolderId()));
         } else {
@@ -138,10 +145,9 @@ public class FileManagerController {
             session.setParentFolderId(session.getServerParentFolderId(session.getParentFolderId()));
 
             getLS();
-        } catch (IOException e) {
+        } catch (IOException | CustomClientException e) {
             alert = new CustomAlert(e.getMessage(), "Ошибка", null, Alert.AlertType.ERROR);
             alert.showSimpleAlert();
-
             e.printStackTrace();
         }
     }
@@ -152,8 +158,14 @@ public class FileManagerController {
         File chooseFile = fileChooser.showOpenDialog(((Node)actionEvent.getSource()).getScene().getWindow());
 
         if (chooseFile != null) {
-            session.sendFileToServer(chooseFile.getName(), session.getCurrentFolderId(), chooseFile);
-            getLS();
+            try {
+                session.sendFileToServer(chooseFile.getName(), session.getCurrentFolderId(), chooseFile);
+                getLS();
+            } catch (IOException | CustomClientException e) {
+                alert = new CustomAlert(e.getMessage(), "Ошибка", null, Alert.AlertType.ERROR);
+                alert.showSimpleAlert();
+                e.printStackTrace();
+            }
         }
     }
 
@@ -197,6 +209,10 @@ public class FileManagerController {
 
             System.out.println(e.getMessage());
             //e.printStackTrace();
+        } catch (CustomClientException e) {
+            alert = new CustomAlert(e.getMessage(), "Ошибка", null, Alert.AlertType.ERROR);
+            alert.showSimpleAlert();
+            e.printStackTrace();
         }
     }
 
@@ -214,7 +230,7 @@ public class FileManagerController {
             try {
                 session.deleteFileFromServer(item.getName(), session.getCurrentFolderId(), item.getType());
                 getLS();
-            } catch (IOException e) {
+            } catch (IOException | CustomClientException e) {
                 alert = new CustomAlert(e.getMessage(), "Ошибка", null, Alert.AlertType.ERROR);
                 alert.showSimpleAlert();
             }
