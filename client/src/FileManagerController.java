@@ -34,6 +34,10 @@ public class FileManagerController {
     private Button buttonDelete;
     @FXML
     private Button buttonNewFolder;
+    @FXML
+    private Button buttonOpenDirectory;
+    @FXML
+    private Button buttonToParentDirectory;
 
     @FXML
     private TableView<ListItem> fileTable;
@@ -53,11 +57,15 @@ public class FileManagerController {
         Image imageDownload = new Image(getClass().getResourceAsStream("/res/download.png"));
         Image imageDelete = new Image(getClass().getResourceAsStream("/res/delete.png"));
         Image imageNewFolder = new Image(getClass().getResourceAsStream("/res/new_folder.png"));
+        Image imageOpenFolder = new Image(getClass().getResourceAsStream("/res/open_folder.png"));
+        Image imageParentFolder = new Image(getClass().getResourceAsStream("/res/parent_folder.png"));
         buttonRefresh.setGraphic(new ImageView(imageRefresh));
         buttonUpload.setGraphic(new ImageView(imageUpload));
         buttonDownload.setGraphic(new ImageView(imageDownload));
         buttonDelete.setGraphic(new ImageView(imageDelete));
         buttonNewFolder.setGraphic(new ImageView(imageNewFolder));
+        buttonOpenDirectory.setGraphic(new ImageView(imageOpenFolder));
+        buttonToParentDirectory.setGraphic(new ImageView(imageParentFolder));
 
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
