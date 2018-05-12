@@ -156,25 +156,28 @@ public class SessionManager {
                     directoryLists.add(queue);
                 }
 
-                if (directoryLists.get(directoryLists.size() - 1).isEmpty()) directoryLists.remove(directoryLists.size() - 1);
-                else {
-                    id = directoryLists.get(directoryLists.size() - 1).remove();
-                    rs = dbManager.query("files", "id = ?", id);
-                    if (rs.next()) {
-                        if (rs.getString("file_type").equals("1")) {
-                            //удаление файла
-                            file = new File("share//" + login + "//" + rs.getString("parent_dir_id") + "_" + rs.getString("file_name"));
-                            if (file.exists()) {
-                                if (file.delete()) {
-                                    dbManager.delete("files", "id = ?", id);
+                if (directoryLists.size() != 0) {
+                    if (directoryLists.get(directoryLists.size() - 1).isEmpty())
+                        directoryLists.remove(directoryLists.size() - 1);
+                    else {
+                        id = directoryLists.get(directoryLists.size() - 1).remove();
+                        rs = dbManager.query("files", "id = ?", id);
+                        if (rs.next()) {
+                            if (rs.getString("file_type").equals("1")) {
+                                //удаление файла
+                                file = new File("share//" + login + "//" + rs.getString("parent_dir_id") + "_" + rs.getString("file_name"));
+                                if (file.exists()) {
+                                    if (file.delete()) {
+                                        dbManager.delete("files", "id = ?", id);
+                                    }
                                 }
+                            } else {
+                                //удаление папки
+                                dbManager.delete("files", "id = ?", id);
                             }
-                        } else {
-                            //удаление папки
-                            dbManager.delete("files", "id = ?", id);
                         }
+                        System.out.println("DELETE: " + id);
                     }
-                    System.out.println("DELETE: " + id);
                 }
                 System.out.println("================");
             } while (directoryLists.size() != 0);

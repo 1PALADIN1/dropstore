@@ -103,9 +103,11 @@ public class FileManagerController {
 
         textArea.clear();
         usersData.clear();
-        if (fileList.size() == 0 || session.getCurrentFolderId().equals("root")) {
-            textArea.appendText("0\t..\t2\tnull\n");
-            usersData.add(new ListItem("0", "..", "2", session.getCurrentFolderId()));
+        if (fileList.size() == 0) {
+            if (!session.getCurrentFolderId().equals("root")) {
+                textArea.appendText("0\t..\t2\tnull\n");
+                usersData.add(new ListItem("0", "..", "2", session.getCurrentFolderId()));
+            }
         } else {
             if (!fileList.get(0).getParentId().equals("null")) {
                 textArea.appendText("0\t..\t2\tnull\n");
