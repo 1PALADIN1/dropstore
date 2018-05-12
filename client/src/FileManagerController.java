@@ -8,14 +8,17 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
+import scenemanager.SceneManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Optional;
 
 public class FileManagerController {
     private ClientSession session;
+    private SceneManager sceneManager;
     private ArrayList<ListItem> fileList;
     private ObservableList<ListItem> usersData = FXCollections.observableArrayList();
     private CustomAlert alert;
@@ -69,10 +72,10 @@ public class FileManagerController {
         buttonOpenDirectory.setGraphic(new ImageView(imageOpenFolder));
         buttonToParentDirectory.setGraphic(new ImageView(imageParentFolder));
 
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        //idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        parentColumn.setCellValueFactory(new PropertyValueFactory<>("parentId"));
+        //parentColumn.setCellValueFactory(new PropertyValueFactory<>("parentId"));
         fileTable.setEditable(false);
 
         try {
@@ -101,29 +104,35 @@ public class FileManagerController {
             if (i + 3 < lsFiles.length) fileList.add(new ListItem(lsFiles[i], lsFiles[++i], lsFiles[++i], lsFiles[++i]));
         }
 
-        textArea.clear();
+        //textArea.clear();
         usersData.clear();
+
         if (fileList.size() == 0) {
             if (!session.getCurrentFolderId().equals("root")) {
-                textArea.appendText("0\t..\t2\tnull\n");
+                //textArea.appendText("0\t..\t2\tnull\n");
                 usersData.add(new ListItem("0", "..", "2", session.getCurrentFolderId()));
             }
         } else {
             if (!fileList.get(0).getParentId().equals("null")) {
-                textArea.appendText("0\t..\t2\tnull\n");
+                //textArea.appendText("0\t..\t2\tnull\n");
                 usersData.add(new ListItem("0", "..", "2", session.getCurrentFolderId()));
             }
         }
         for (int i = 0; i < fileList.size(); i++) {
-            textArea.appendText(fileList.get(i).getId() + "\t" + fileList.get(i).getName() + "\t" +
-                    fileList.get(i).getType() + "\t" + fileList.get(i).getParentId() + "\n");
+            //textArea.appendText(fileList.get(i).getId() + "\t" + fileList.get(i).getName() + "\t" +
+            //        fileList.get(i).getType() + "\t" + fileList.get(i).getParentId() + "\n");
             //textArea.appendText(fileList.get(i).getName() + "\n");
 
             //таблица
             usersData.add(new ListItem(fileList.get(i).getId(), fileList.get(i).getName(), fileList.get(i).getType(), fileList.get(i).getParentId()));
         }
 
+        typeColumn.setSortable(true);
+        typeColumn.setSortType(TableColumn.SortType.DESCENDING);
         fileTable.setItems(usersData);
+        fileTable.getSortOrder().add(typeColumn);
+        typeColumn.setSortable(false);
+        nameColumn.setSortable(false);
     }
 
     //отуркытие выбранной категории
@@ -135,9 +144,16 @@ public class FileManagerController {
 
         //если выбрана папка
         if (item.getType().equals("2")) {
-            session.setParentFolderId(session.getCurrentFolderId());
-            session.setCurrentFolderId(item.getId());
-            getLS();
+            if (item.getName().equals("..")) {
+                toParentDirectory();
+            } else {
+                session.setParentFolderId(session.getCurrentFolderId());
+                session.setCurrentFolderId(item.getId());
+                getLS();
+                if (session.getCurrentFolderId().equals("root")) infoLabel.setText("ROOT folder");
+                else
+                    infoLabel.setText("");
+            }
         }
     }
 
@@ -145,8 +161,10 @@ public class FileManagerController {
         try {
             session.setCurrentFolderId(session.getParentFolderId());
             session.setParentFolderId(session.getServerParentFolderId(session.getParentFolderId()));
-
             getLS();
+            if (session.getCurrentFolderId().equals("root")) infoLabel.setText("ROOT folder");
+            else
+                infoLabel.setText("");
         } catch (IOException | CustomClientException e) {
             alert = new CustomAlert(e.getMessage(), "Ошибка", null, Alert.AlertType.ERROR);
             alert.showSimpleAlert();

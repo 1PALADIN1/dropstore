@@ -21,15 +21,15 @@
             <Button fx:id="buttonToParentDirectory" mnemonicParsing="false" onAction="#toParentDirectory"/>
          </children>
       </HBox>
-      <TextArea fx:id="textArea" prefHeight="150.0" prefWidth="800.0" />
-      <TableView fx:id="fileTable" prefHeight="450.0" prefWidth="200.0">
+      <!--<TextArea fx:id="textArea" prefHeight="0.0" prefWidth="800.0" /> -->
+      <TableView fx:id="fileTable" prefHeight="600.0" prefWidth="200.0">
           <columns>
-              <TableColumn fx:id="idColumn" prefWidth="50.0" text="ID" />
+              <!-- <TableColumn fx:id="idColumn" prefWidth="50.0" text="ID" /> -->
               <TableColumn fx:id="typeColumn" prefWidth="50.0" text="ТИП" />
-              <TableColumn fx:id="nameColumn" prefWidth="595.0" text="ИМЯ" />
-              <TableColumn fx:id="parentColumn" prefWidth="100.0" text="PARENT" />
+              <TableColumn fx:id="nameColumn" prefWidth="745.0" text="ИМЯ" />
+              <!-- <TableColumn fx:id="parentColumn" prefWidth="100.0" text="PARENT" /> -->
           </columns>
       </TableView>
-      <Label fx:id="infoLabel" alignment="CENTER_RIGHT" prefWidth="800.0" text="" />
+      <Label fx:id="infoLabel" alignment="CENTER_RIGHT" prefWidth="800.0" />
    </children>
 </VBox>
