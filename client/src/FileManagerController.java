@@ -146,7 +146,7 @@ public class FileManagerController {
         if (chooseFile != null) {
             session = ClientApp.getSession();
             if (session != null) {
-                session.sendFileToServer(chooseFile.getName(), chooseFile);
+                session.sendFileToServer(chooseFile.getName(), session.getCurrentFolderId(), chooseFile);
                 getLS();
             }
         }
@@ -158,7 +158,8 @@ public class FileManagerController {
             try {
                 session.downloadFileFromServer("1234.txt", "2");
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
+                //e.printStackTrace();
             }
         }
     }

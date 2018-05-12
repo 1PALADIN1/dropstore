@@ -69,8 +69,8 @@ public class SessionManager {
     }
 
     //отправка файла на сервер
-    public void sendFileToServer(String fileName, File file) {
-        String msg = Command.UPLOAD.getCommandString() + " " + fileName + " 3";
+    public void sendFileToServer(String fileName, String folderId, File file) {
+        String msg = Command.UPLOAD.getCommandString() + " " + fileName + " " + folderId;
         FileInputStream fileInputStream = null;
         try {
             dataOutputStream.writeUTF(msg);
@@ -119,7 +119,6 @@ public class SessionManager {
             default:
                 System.out.println("Команда не распознана");
         }
-
     }
 
     //скачивание файла с сервера
