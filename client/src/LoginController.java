@@ -9,6 +9,7 @@ import java.io.IOException;
 public class LoginController {
     private SceneManager sceneManager;
     private SessionManager session;
+    private CustomAlert alert;
 
     //контроллы
     @FXML
@@ -17,11 +18,13 @@ public class LoginController {
     TextField passField;
 
     public void login() {
+
+
         try {
             session = ClientApp.getSession();
             if (session != null) {
                 if (session.authUser(loginField.getText(), passField.getText())) {
-                    showAlert("Поздравляем! Вы залогинились!");
+                    //showAlert("Поздравляем! Вы залогинились!");
                     sceneManager = new SceneManager();
                     sceneManager.changePrimaryStage("templates/filemanager.fxml", "File Manager");
 
@@ -29,14 +32,20 @@ public class LoginController {
                     File folder = new File("download");
                     if (!folder.exists()) folder.mkdir();
                 } else {
-                    showAlert("Введены неверные логин и/или пароль");
+                    alert = new CustomAlert("Введены неверные логин и/или пароль", "Ошибка", null, Alert.AlertType.ERROR);
+                    alert.showAlert();
+                    //showAlert("Введены неверные логин и/или пароль");
                 }
             } else {
-                showAlert("Не удалось создать сессию, возможно, сервер недоступен");
+                alert = new CustomAlert("Не удалось создать сессию, возможно, сервер недоступен", "Ошибка", null, Alert.AlertType.ERROR);
+                alert.showAlert();
+                //showAlert("Не удалось создать сессию, возможно, сервер недоступен");
             }
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(e.getMessage());
+            alert = new CustomAlert(e.getMessage(), "Ошибка", null, Alert.AlertType.ERROR);
+            alert.showAlert();
+            //showAlert(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -48,7 +57,7 @@ public class LoginController {
             session = ClientApp.getSession();
             if (session != null) {
                 if (session.regUser(loginField.getText(), passField.getText())) {
-                    showAlert("Пользователь успешно зарегистрировался!");
+                    //showAlert("Пользователь успешно зарегистрировался!");
                     sceneManager = new SceneManager();
                     sceneManager.changePrimaryStage("templates/filemanager.fxml", "File Manager");
 
@@ -56,25 +65,17 @@ public class LoginController {
                     File folder = new File("download");
                     if (!folder.exists()) folder.mkdir();
                 } else {
-                    showAlert("Такой пользователь уже есть в системе");
+                    alert = new CustomAlert("Такой пользователь уже есть в системе", "Ошибка", null, Alert.AlertType.ERROR);
+                    alert.showAlert();
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(e.getMessage());
+            alert = new CustomAlert(e.getMessage(), "Ошибка", null, Alert.AlertType.ERROR);
+            alert.showAlert();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void showAlert(String message) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Возникли проблемы");
-            alert.setHeaderText(null);
-            alert.setContentText(message);
-            alert.showAndWait();
-        });
     }
 
 }
