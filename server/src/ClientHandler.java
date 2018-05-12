@@ -38,6 +38,7 @@ public class ClientHandler implements Runnable {
                     if (data.length >= 2) {
                         switch (command) {
                             case LS: {
+                                //TODO вынести exception
                                 dataOutputStream.writeUTF(sessionManager.getFileList(login, data[1]));
                             }
                             break;

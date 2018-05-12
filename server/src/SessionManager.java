@@ -15,25 +15,29 @@ public class SessionManager {
         this.dbManager = authService.getDBConnection();
     }
 
+    private String getUserId(String login) throws SQLException {
+        String userId = null;
+        ResultSet rs;
+
+        rs = dbManager.query("users", "login = ?", login);
+        if (rs.next()) userId = rs.getString("id");
+
+        return userId;
+    }
+
     //загрузка файла на сервер
     public void uploadFileOnServer(String login, String fileName, String folderId, byte[] fileBytes) throws CustomServerException, IOException, SQLException {
         //у каждого пользователя своя папка на сервере
         //для разграничения нужен login
-        String userId = null;
-        ResultSet rs;
+        String userId = getUserId(login);
 
         //создаём папку для корневого каталога, если ещё не создана
         File rootFolder = new File("share//" + login);
         if (!rootFolder.exists()) rootFolder.mkdirs();
 
-        //TODO вынести в отдельный метод
-        rs = dbManager.query("users", "login = ?", login);
-        if (rs.next()) userId = rs.getString("id");
-
         //проверяем на существование в базе
         if (!dbManager.checkExistence("files", "file_name = ? and parent_dir_id = ?", fileName, folderId)) {
-            //вставляем данные в таблицу\
-            //TODO вставить user_id
+            //вставляем данные в таблицу
             if (folderId.equals("root")) {
                 dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type"},
                         new String[]{userId, "share//" + login + "//", fileName, "1"});
@@ -63,22 +67,16 @@ public class SessionManager {
     }
 
     //скачать файл с сервера
-    public byte[] downloadFileFromServer(String login, String fileName, String folderId) throws Exception {
+    public byte[] downloadFileFromServer(String login, String fileName, String folderId) throws IOException, CustomServerException, SQLException {
         boolean checkExist;
-        String userId = null;
-        ResultSet rs;
-
-        //TODO вынести в отдельный метод
-        rs = dbManager.query("users", "login = ?", login);
-        if (rs.next()) userId = rs.getString("id");
+        String userId = getUserId(login);
 
         if (folderId.equals("root")) checkExist = dbManager.checkExistence("files", "user_id = ? AND file_name = ? AND parent_dir_id is null", userId, fileName);
         else
             checkExist = dbManager.checkExistence("files", "user_id = ? AND file_name = ? AND parent_dir_id = ?", userId, fileName, folderId);
 
         if (!checkExist) {
-            //TODO заменить на кастомные
-            throw new Exception("Такого файла не существует, обратитесь к администратору");
+            throw new CustomServerException("Такого файла не существует, обратитесь к администратору");
         }
         FileInputStream fileInputStream;
         if (folderId.equals("root")) fileInputStream = new FileInputStream("share//" + login + "//" + fileName);
@@ -93,12 +91,7 @@ public class SessionManager {
 
     public void createDirectory(String login, String dirName, String folderId) throws Exception {
         boolean checkExist;
-        String userId = null;
-        ResultSet rs;
-
-        //TODO вынести в отдельный метод
-        rs = dbManager.query("users", "login = ?", login);
-        if (rs.next()) userId = rs.getString("id");
+        String userId = getUserId(login);
 
         if (folderId.equals("root")) checkExist = dbManager.checkExistence("files", "user_id = ? AND file_name = ? AND parent_dir_id is null", userId, dirName);
         else
@@ -118,13 +111,9 @@ public class SessionManager {
 
     //удаление файла с сервера и базы
     public void deleteFileFromServer(String login, String fileName, String folderId, String objectType) throws SQLException, CustomServerException {
-        String userId = null;
+        String userId = getUserId(login);
         ResultSet rs;
         File file;
-
-        //TODO вынести в отдельный метод
-        rs = dbManager.query("users", "login = ?", login);
-        if (rs.next()) userId = rs.getString("id");
 
         if (objectType.equals("1")) {
             //для файлов
