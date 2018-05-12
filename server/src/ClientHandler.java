@@ -49,9 +49,7 @@ public class ClientHandler implements Runnable {
                                     try {
                                         sessionManager.uploadFileOnServer(login, data[1], data[2], fileBytes);
                                         dataOutputStream.writeUTF(Command.OK.getCommandString() + "|Файл успешно загружен");
-                                    } catch (IOException e) {
-                                        dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|Произошла ошибка при загрузке файла, обратитесь к администратору");
-                                    } catch (CustomServerException e) {
+                                    } catch (IOException | CustomServerException | SQLException e) {
                                         dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|" + e.getMessage());
                                     }
                                 }

@@ -15,12 +15,19 @@ public class SessionManager {
     }
 
     //загрузка файла на сервер
-    public void uploadFileOnServer(String login, String fileName, String folderId, byte[] fileBytes) throws CustomServerException, IOException {
+    public void uploadFileOnServer(String login, String fileName, String folderId, byte[] fileBytes) throws CustomServerException, IOException, SQLException {
         //у каждого пользователя своя папка на сервере
         //для разграничения нужен login
+        String userId = null;
+        ResultSet rs;
+
         //создаём папку для корневого каталога, если ещё не создана
         File rootFolder = new File("share//" + login);
         if (!rootFolder.exists()) rootFolder.mkdirs();
+
+        //TODO вынести в отдельный метод
+        rs = dbManager.query("users", "login = ?", login);
+        if (rs.next()) userId = rs.getString("id");
 
         //проверяем на существование в базе
         if (!dbManager.checkExistence("files", "file_name = ? and parent_dir_id = ?", fileName, folderId)) {
@@ -28,10 +35,10 @@ public class SessionManager {
             //TODO вставить user_id
             if (folderId.equals("root")) {
                 dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type"},
-                        new String[]{"1", "share//" + login + "//", fileName, "1"});
+                        new String[]{userId, "share//" + login + "//", fileName, "1"});
             } else {
                 dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type", "parent_dir_id"},
-                        new String[]{"1", "share//" + login + "//", fileName, "1", folderId});
+                        new String[]{userId, "share//" + login + "//", fileName, "1", folderId});
             }
 
             //создаём сам файл
