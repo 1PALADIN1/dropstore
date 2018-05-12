@@ -18,6 +18,7 @@ public class FileManagerController {
     private SessionManager session;
     private ArrayList<ListItem> fileList;
     private ObservableList<ListItem> usersData = FXCollections.observableArrayList();
+    private CustomAlert alert;
 
     @FXML
     TextArea textArea;
@@ -179,7 +180,7 @@ public class FileManagerController {
             try {
                 TextInputDialog dialog = new TextInputDialog();
                 dialog.setTitle("Новая папка");
-                dialog.setHeaderText("Введите название папки");
+                dialog.setHeaderText(null);
                 dialog.setContentText("Название:");
 
                 Optional<String> result = dialog.showAndWait();
@@ -199,7 +200,20 @@ public class FileManagerController {
     public void deleteFile() {
         session = ClientApp.getSession();
         if (session != null) {
-            session.deleteFileFromServer("root", "test.txt");
+            TablePosition tablePosition = fileTable.getSelectionModel().getSelectedCells().get(0);
+            int row = tablePosition.getRow();
+            ListItem item = fileTable.getItems().get(row);
+
+            if (item.getType().equals("2")) {
+                alert = new CustomAlert("Вы точно хотите удалить папку и всё её содержимое?", "Удаление папки", null, Alert.AlertType.CONFIRMATION);
+            } else {
+                alert = new CustomAlert("Вы точно хотите удалить файл?", "Удаление файла", null, Alert.AlertType.CONFIRMATION);
+            }
+            if (alert.showAlert() == ButtonType.OK) {
+                session.deleteFileFromServer("root", "test.txt");
+            } else {
+                System.out.println("Отмена удаления папки");
+            }
         }
     }
 }

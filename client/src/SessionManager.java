@@ -146,8 +146,8 @@ public class SessionManager {
     }
 
     //удаление файла
-    public void deleteFileFromServer(String filePath, String fileName) {
-        String msg = "/del " + filePath + " " + fileName;
+    public void deleteFileFromServer(String fileName, String folderId, String objectType) {
+        String msg = Command.DELETE.getCommandString() + " " + fileName + " " + folderId + " " + objectType;
         try {
             dataOutputStream.writeUTF(msg);
         } catch (IOException e) {
