@@ -3,6 +3,7 @@ import dbmanager.DBManager;
 import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class SessionManager {
     private DBManager dbManager;
@@ -142,7 +143,52 @@ public class SessionManager {
             }
         } else {
             //для папок
-            //TODO реализовать каскадное удаление файлов
+            String id = null; //id текущей папки
+            Queue queue;
+            ArrayList<Queue> directoryLists = new ArrayList<>();
+            if (folderId.equals("root")) rs = dbManager.query("files", "user_id = ? AND file_name = ? AND parent_dir_id IS NULL", userId, fileName);
+            else
+                rs = dbManager.query("files", "user_id = ? AND file_name = ? AND parent_dir_id = ?", userId, fileName, folderId);
+            if (rs.next()) id = rs.getString("id");
+            dbManager.delete("files", "id = ?", id);
+
+            do {
+                rs = dbManager.query("files", "user_id = ? AND parent_dir_id = ?", userId, id);
+                if (rs.next()) {
+                    queue = new Queue(100);
+                    queue.insert(rs.getString("id"));
+
+                    System.out.println(rs.getString("id") + ", size: " + directoryLists.size());
+
+                    while (rs.next()) {
+                        queue.insert(rs.getString("id"));
+                        System.out.println(rs.getString("id") + ", size: " + directoryLists.size());
+                    }
+                    directoryLists.add(queue);
+                }
+
+                if (directoryLists.get(directoryLists.size() - 1).isEmpty()) directoryLists.remove(directoryLists.size() - 1);
+                else {
+                    id = directoryLists.get(directoryLists.size() - 1).remove();
+                    rs = dbManager.query("files", "id = ?", id);
+                    if (rs.next()) {
+                        if (rs.getString("file_type").equals("1")) {
+                            //удаление файла
+                            file = new File("share//" + login + "//" + rs.getString("parent_dir_id") + "_" + rs.getString("file_name"));
+                            if (file.exists()) {
+                                if (file.delete()) {
+                                    dbManager.delete("files", "id = ?", id);
+                                }
+                            }
+                        } else {
+                            //удаление папки
+                            dbManager.delete("files", "id = ?", id);
+                        }
+                    }
+                    System.out.println("DELETE: " + id);
+                }
+                System.out.println("================");
+            } while (directoryLists.size() != 0);
         }
     }
 
