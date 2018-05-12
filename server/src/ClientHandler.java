@@ -2,6 +2,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.SQLException;
 
 public class ClientHandler implements Runnable {
     private Socket socket;
@@ -75,6 +76,15 @@ public class ClientHandler implements Runnable {
                                 } catch (Exception e) {
                                     dataOutputStream.writeUTF(Command.ERROR.getCommandString() + " " + e.getMessage());
                                     System.out.println("Ошибка при создании директории: " + e.getMessage());
+                                }
+                            }
+                            break;
+                            case PARENTDIR: {
+                                try {
+                                    String parentFolderId = sessionManager.getParentFolderId(login, data[1]);
+                                    dataOutputStream.writeUTF(Command.OK.getCommandString() + "|" + parentFolderId);
+                                } catch (SQLException e) {
+                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|" + e.getMessage());
                                 }
                             }
                             break;

@@ -156,6 +156,7 @@ public class SessionManager {
         }
     }
 
+    //управление папками
     public void setCurrentFolderId(String currentFolderId) {
         if (currentFolderId.equals("null")) currentFolderId = "root";
         this.currentFolderId = currentFolderId;
@@ -172,6 +173,24 @@ public class SessionManager {
 
     public String getParentFolderId() {
         return parentFolderId;
+    }
+
+    public String getServerParentFolderId(String folderId) throws IOException {
+        String msg = Command.PARENTDIR.getCommandString() + " " + folderId;
+        dataOutputStream.writeUTF(msg);
+
+        String[] data = dataInputStream.readUTF().split("\\|");
+        switch (Command.getCommand(data[0])) {
+            case OK:
+                System.out.println(data[1]);
+                return data[1];
+            case ERROR:
+                System.out.println("Ошибка получения родительской папки " + data[1]);
+                return "root";
+            default:
+                System.out.println("Команда не распознана");
+        }
+        return "root";
     }
 
     public void closeConnection() {

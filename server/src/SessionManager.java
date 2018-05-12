@@ -151,6 +151,22 @@ public class SessionManager {
         return outStr.toString();
     }
 
+    public String getParentFolderId(String login, String folderId) throws SQLException {
+        ResultSet rs;
+        if (folderId.equals("root")) return "root";
+
+        rs = dbManager.query("users", "login = ?", login);
+        if (rs.next()) {
+            String userId = rs.getString("id");
+            rs = dbManager.query("files", "user_id = ? and id = ?", userId, folderId);
+            if (rs.next()) {
+                String result = rs.getString("parent_dir_id");
+                return result == null ? "root" : result;
+            }
+        }
+        return "root";
+    }
+
     public void close() {
         dbManager.disconnect();
     }

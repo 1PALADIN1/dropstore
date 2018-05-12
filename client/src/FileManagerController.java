@@ -126,7 +126,14 @@ public class FileManagerController {
     public void toParentDirectory() {
         session = ClientApp.getSession();
         if (session != null) {
-            session.setCurrentFolderId(session.getParentFolderId());
+            try {
+                session.setCurrentFolderId(session.getParentFolderId());
+                session.setParentFolderId(session.getServerParentFolderId(session.getParentFolderId()));
+
+                getLS();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
         }
     }
