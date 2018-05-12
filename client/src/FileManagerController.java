@@ -12,6 +12,7 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class FileManagerController {
     private SessionManager session;
@@ -120,7 +121,7 @@ public class FileManagerController {
             TablePosition tablePosition = fileTable.getSelectionModel().getSelectedCells().get(0);
             int row = tablePosition.getRow();
             ListItem item = fileTable.getItems().get(row);
-            System.out.println("Type: " + item.getType() + ", ID: " + item.getId() + ", PARENT_FOLDER: " + item.getParentId());
+            //System.out.println("Type: " + item.getType() + ", ID: " + item.getId() + ", PARENT_FOLDER: " + item.getParentId());
 
             //если выбрана папка
             if (item.getType().equals("2")) {
@@ -176,8 +177,18 @@ public class FileManagerController {
         session = ClientApp.getSession();
         if (session != null) {
             try {
-                session.createDirectory("OneMoreDir", session.getCurrentFolderId());
-                getLS();
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle("Новая папка");
+                dialog.setHeaderText("Введите название папки");
+                dialog.setContentText("Название:");
+
+                Optional<String> result = dialog.showAndWait();
+                if (result.isPresent() && !result.toString().isEmpty()){
+                    System.out.println("Новая папка: " + result.get());
+                    session.createDirectory(result.get(), session.getCurrentFolderId());
+                    getLS();
+                }
+
             } catch (IOException e) {
                 System.out.println(e.getMessage());
                 //e.printStackTrace();
