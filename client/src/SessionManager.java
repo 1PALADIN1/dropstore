@@ -8,6 +8,8 @@ public class SessionManager {
     private int serverPort;
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
+    private String currentFolderId = "root";
+    private String parentFolderId = "root";
 
     public SessionManager(String serverIp, int serverPort) throws IOException {
         this.serverIp = serverIp;
@@ -101,8 +103,8 @@ public class SessionManager {
         }
     }
 
-    public void createDirectory(String dirName) throws IOException {
-        String msg = Command.CREATEDIR.getCommandString() + " " + dirName + " root";
+    public void createDirectory(String dirName, String folderId) throws IOException {
+        String msg = Command.CREATEDIR.getCommandString() + " " + dirName + " " + folderId;
         dataOutputStream.writeUTF(msg);
         String[] data = dataInputStream.readUTF().split("\\s");
 
@@ -152,6 +154,24 @@ public class SessionManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setCurrentFolderId(String currentFolderId) {
+        if (currentFolderId.equals("null")) currentFolderId = "root";
+        this.currentFolderId = currentFolderId;
+    }
+
+    public void setParentFolderId(String parentFolderId) {
+        if (parentFolderId.equals("null")) parentFolderId = "root";
+        this.parentFolderId = parentFolderId;
+    }
+
+    public String getCurrentFolderId() {
+        return currentFolderId;
+    }
+
+    public String getParentFolderId() {
+        return parentFolderId;
     }
 
     public void closeConnection() {
