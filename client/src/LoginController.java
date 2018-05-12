@@ -1,6 +1,6 @@
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import scenemanager.SceneManager;
 import java.io.File;
@@ -15,7 +15,7 @@ public class LoginController {
     @FXML
     TextField loginField;
     @FXML
-    TextField passField;
+    PasswordField passField;
 
     @FXML
     private void initialize() {
