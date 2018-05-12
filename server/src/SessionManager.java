@@ -3,6 +3,7 @@ import dbmanager.DBManager;
 import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class SessionManager {
     private DBManager dbManager;
@@ -14,24 +15,35 @@ public class SessionManager {
         this.dbManager = authService.getDBConnection();
     }
 
+    private String getUserId(String login) throws SQLException {
+        String userId = null;
+        ResultSet rs;
+
+        rs = dbManager.query("users", "login = ?", login);
+        if (rs.next()) userId = rs.getString("id");
+
+        return userId;
+    }
+
     //загрузка файла на сервер
-    public void uploadFileOnServer(String login, String fileName, String folderId, byte[] fileBytes) throws CustomServerException, IOException {
+    public void uploadFileOnServer(String login, String fileName, String folderId, byte[] fileBytes) throws CustomServerException, IOException, SQLException {
         //у каждого пользователя своя папка на сервере
         //для разграничения нужен login
+        String userId = getUserId(login);
+
         //создаём папку для корневого каталога, если ещё не создана
         File rootFolder = new File("share//" + login);
         if (!rootFolder.exists()) rootFolder.mkdirs();
 
         //проверяем на существование в базе
         if (!dbManager.checkExistence("files", "file_name = ? and parent_dir_id = ?", fileName, folderId)) {
-            //вставляем данные в таблицу\
-            //TODO вставить user_id
+            //вставляем данные в таблицу
             if (folderId.equals("root")) {
                 dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type"},
-                        new String[]{"1", "share//" + login + "//", fileName, "1"});
+                        new String[]{userId, "share//" + login + "//", fileName, "1"});
             } else {
                 dbManager.insert("files", new String[]{"user_id", "file_path", "file_name", "file_type", "parent_dir_id"},
-                        new String[]{"1", "share//" + login + "//", fileName, "1", folderId});
+                        new String[]{userId, "share//" + login + "//", fileName, "1", folderId});
             }
 
             //создаём сам файл
@@ -55,22 +67,16 @@ public class SessionManager {
     }
 
     //скачать файл с сервера
-    public byte[] downloadFileFromServer(String login, String fileName, String folderId) throws Exception {
+    public byte[] downloadFileFromServer(String login, String fileName, String folderId) throws IOException, CustomServerException, SQLException {
         boolean checkExist;
-        String userId = null;
-        ResultSet rs;
+        String userId = getUserId(login);
 
-        //TODO вынести в отдельный метод
-        rs = dbManager.query("users", "login = ?", login);
-        if (rs.next()) userId = rs.getString("id");
-
-        if (folderId.equals("root")) checkExist = dbManager.checkExistence("files", "user_id = ? and file_name = ? and parent_dir_id is null", userId, fileName);
+        if (folderId.equals("root")) checkExist = dbManager.checkExistence("files", "user_id = ? AND file_name = ? AND parent_dir_id is null", userId, fileName);
         else
-            checkExist = dbManager.checkExistence("files", "user_id = ? and file_name = ? and parent_dir_id = ?", userId, fileName, folderId);
+            checkExist = dbManager.checkExistence("files", "user_id = ? AND file_name = ? AND parent_dir_id = ?", userId, fileName, folderId);
 
         if (!checkExist) {
-            //TODO заменить на кастомные
-            throw new Exception("Такого файла не существует, обратитесь к администратору");
+            throw new CustomServerException("Такого файла не существует, обратитесь к администратору");
         }
         FileInputStream fileInputStream;
         if (folderId.equals("root")) fileInputStream = new FileInputStream("share//" + login + "//" + fileName);
@@ -85,16 +91,11 @@ public class SessionManager {
 
     public void createDirectory(String login, String dirName, String folderId) throws Exception {
         boolean checkExist;
-        String userId = null;
-        ResultSet rs;
+        String userId = getUserId(login);
 
-        //TODO вынести в отдельный метод
-        rs = dbManager.query("users", "login = ?", login);
-        if (rs.next()) userId = rs.getString("id");
-
-        if (folderId.equals("root")) checkExist = dbManager.checkExistence("files", "user_id = ? and file_name = ? and parent_dir_id is null", userId, dirName);
+        if (folderId.equals("root")) checkExist = dbManager.checkExistence("files", "user_id = ? AND file_name = ? AND parent_dir_id is null", userId, dirName);
         else
-            checkExist = dbManager.checkExistence("files", "user_id = ? and file_name = ? and parent_dir_id = ?", userId, dirName, folderId);
+            checkExist = dbManager.checkExistence("files", "user_id = ? AND file_name = ? AND parent_dir_id = ?", userId, dirName, folderId);
 
         if (checkExist) throw new Exception("Такая папка уже существует!");
         else {
@@ -109,14 +110,77 @@ public class SessionManager {
     }
 
     //удаление файла с сервера и базы
-    //TODO поправить метод
-    public void deleteFileFromServer(String login, String filePath, String fileName) {
-        if (filePath.equals("root")) filePath = "";
-        File file = new File("share//" + login + "//" + filePath + fileName);
-        if (file.exists()) {
-            if (file.delete()) {
-                dbManager.delete("files", "file_path = ? AND file_name = ?", "share//" + login + "//" + filePath, fileName);
+    public void deleteFileFromServer(String login, String fileName, String folderId, String objectType) throws SQLException, CustomServerException {
+        String userId = getUserId(login);
+        ResultSet rs;
+        File file;
+
+        if (objectType.equals("1")) {
+            //для файлов
+
+            if (folderId.equals("root")) file = new File("share//" + login + "//" + fileName);
+            else
+                file = new File("share//" + login + "//" + folderId + "_" + fileName);
+            if (file.exists()) {
+                if (file.delete()) {
+                    if (folderId.equals("root")) dbManager.delete("files", "user_id = ? AND file_name = ? AND parent_dir_id is null", userId, fileName);
+                    else
+                        dbManager.delete("files", "user_id = ? AND file_name = ? AND parent_dir_id = ?", userId, fileName, folderId);
+                }
+            } else {
+                throw new CustomServerException("Не удалось найти файл на сервере");
             }
+        } else {
+            //для папок
+            String id = null; //id текущей папки
+            Queue queue;
+            ArrayList<Queue> directoryLists = new ArrayList<>();
+            if (folderId.equals("root")) rs = dbManager.query("files", "user_id = ? AND file_name = ? AND parent_dir_id IS NULL", userId, fileName);
+            else
+                rs = dbManager.query("files", "user_id = ? AND file_name = ? AND parent_dir_id = ?", userId, fileName, folderId);
+            if (rs.next()) id = rs.getString("id");
+            dbManager.delete("files", "id = ?", id);
+
+            do {
+                rs = dbManager.query("files", "user_id = ? AND parent_dir_id = ?", userId, id);
+                if (rs.next()) {
+                    queue = new Queue(100);
+                    queue.insert(rs.getString("id"));
+
+                    System.out.println(rs.getString("id") + ", size: " + directoryLists.size());
+
+                    while (rs.next()) {
+                        queue.insert(rs.getString("id"));
+                        System.out.println(rs.getString("id") + ", size: " + directoryLists.size());
+                    }
+                    directoryLists.add(queue);
+                }
+
+                if (directoryLists.size() != 0) {
+                    if (directoryLists.get(directoryLists.size() - 1).isEmpty())
+                        directoryLists.remove(directoryLists.size() - 1);
+                    else {
+                        id = directoryLists.get(directoryLists.size() - 1).remove();
+                        rs = dbManager.query("files", "id = ?", id);
+                        if (rs.next()) {
+                            if (rs.getString("file_type").equals("1")) {
+                                //удаление файла
+                                file = new File("share//" + login + "//" + rs.getString("parent_dir_id") + "_" + rs.getString("file_name"));
+                                if (file.exists()) {
+                                    if (file.delete()) {
+                                        dbManager.delete("files", "id = ?", id);
+                                    }
+                                }
+                            } else {
+                                //удаление папки
+                                dbManager.delete("files", "id = ?", id);
+                            }
+                        }
+                        System.out.println("DELETE: " + id);
+                    }
+                }
+                System.out.println("================");
+            } while (directoryLists.size() != 0);
         }
     }
 

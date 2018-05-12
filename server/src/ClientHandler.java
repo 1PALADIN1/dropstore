@@ -29,7 +29,7 @@ public class ClientHandler implements Runnable {
             while (true) {
                 String msg = dataInputStream.readUTF();
                 System.out.println(msg);
-                String[] data = msg.split("\\s");
+                String[] data = msg.split("\\|");
                 command = Command.getCommand(data[0]);
 
                 if (isAuth) {
@@ -38,6 +38,7 @@ public class ClientHandler implements Runnable {
                     if (data.length >= 2) {
                         switch (command) {
                             case LS: {
+                                //TODO вынести exception
                                 dataOutputStream.writeUTF(sessionManager.getFileList(login, data[1]));
                             }
                             break;
@@ -49,9 +50,7 @@ public class ClientHandler implements Runnable {
                                     try {
                                         sessionManager.uploadFileOnServer(login, data[1], data[2], fileBytes);
                                         dataOutputStream.writeUTF(Command.OK.getCommandString() + "|Файл успешно загружен");
-                                    } catch (IOException e) {
-                                        dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|Произошла ошибка при загрузке файла, обратитесь к администратору");
-                                    } catch (CustomServerException e) {
+                                    } catch (IOException | CustomServerException | SQLException e) {
                                         dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|" + e.getMessage());
                                     }
                                 }
@@ -64,7 +63,7 @@ public class ClientHandler implements Runnable {
                                     dataOutputStream.writeUTF(Command.CONTINUE.getCommandString());
                                     dataOutputStream.write(fileBytes);
                                 } catch (Exception e) {
-                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + " " + e.getMessage());
+                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|" + e.getMessage());
                                     System.out.println("Ошибка при отправке файла: " + e.getMessage());
                                 }
                             }
@@ -74,7 +73,7 @@ public class ClientHandler implements Runnable {
                                     sessionManager.createDirectory(login, data[1], data[2]);
                                     dataOutputStream.writeUTF(Command.OK.getCommandString());
                                 } catch (Exception e) {
-                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + " " + e.getMessage());
+                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|" + e.getMessage());
                                     System.out.println("Ошибка при создании директории: " + e.getMessage());
                                 }
                             }
@@ -89,7 +88,13 @@ public class ClientHandler implements Runnable {
                             }
                             break;
                             case DELETE: {
-                                sessionManager.deleteFileFromServer(login, data[1], data[2]);
+                                try {
+                                    sessionManager.deleteFileFromServer(login, data[1], data[2], data[3]);
+                                    dataOutputStream.writeUTF(Command.OK.getCommandString() + "|Данные успешно удалены");
+                                } catch (SQLException | CustomServerException e) {
+                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|" + e.getMessage());
+                                    System.out.println("Ошибка удаления: " + e.getMessage());
+                                }
                             }
                             break;
                             default:
@@ -106,7 +111,7 @@ public class ClientHandler implements Runnable {
                                 System.out.println("Пользователь " + login + " авторизовался в системе");
                                 isAuth = true;
                             } else {
-                                dataOutputStream.writeUTF(Command.ERROR.getCommandString());
+                                dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|Не получилось авторизоваться, проверьте логин и пароль");
                             }
                         } else {
                             if (command == Command.REG) {
