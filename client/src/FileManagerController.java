@@ -210,7 +210,7 @@ public class FileManagerController {
                 alert = new CustomAlert("Вы точно хотите удалить файл?", "Удаление файла", null, Alert.AlertType.CONFIRMATION);
             }
             if (alert.showAlert() == ButtonType.OK) {
-                session.deleteFileFromServer("root", "test.txt");
+                session.deleteFileFromServer(item.getName(), session.getCurrentFolderId(), item.getType());
             } else {
                 System.out.println("Отмена удаления папки");
             }
