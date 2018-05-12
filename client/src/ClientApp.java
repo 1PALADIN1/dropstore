@@ -6,8 +6,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import scenemanager.SceneManager;
 
-import java.io.IOException;
-
 public class ClientApp extends Application {
     private final static String SERVER_IP = "localhost";
     private final static int SERVER_PORT = 5654;
@@ -33,22 +31,6 @@ public class ClientApp extends Application {
 
     @Override
     public void init() {
-        //инициализаци подключения
-        //TODO сделать обработку ошибок отдельным классом
-        try {
-            sessionManager = new ClientSession(SERVER_IP, SERVER_PORT);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    public static ClientSession getSession() {
-        //при повторной попытке подключения
-        if (sessionManager == null) try {
-            sessionManager = new ClientSession(SERVER_IP, SERVER_PORT);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return sessionManager;
     }
 }

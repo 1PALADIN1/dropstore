@@ -17,11 +17,20 @@ public class LoginController {
     @FXML
     TextField passField;
 
-    public void login() {
-
-
+    @FXML
+    private void initialize() {
         try {
-            session = ClientApp.getSession();
+            session = ClientSession.getClientSession();
+        } catch (IOException e) {
+            alert = new CustomAlert("Не удалось создать подключение", "Ошибка", null, Alert.AlertType.ERROR);
+            alert.showAlert();
+            e.printStackTrace();
+        }
+    }
+
+    public void login() {
+        try {
+            session = ClientSession.getClientSession();
             if (session != null) {
                 if (session.authUser(loginField.getText(), passField.getText())) {
                     //showAlert("Поздравляем! Вы залогинились!");
@@ -54,7 +63,7 @@ public class LoginController {
     //TODO вынести в отдельный контроллер со своим представлением
     public void registration() {
         try {
-            session = ClientApp.getSession();
+            session = ClientSession.getClientSession();
             if (session != null) {
                 if (session.regUser(loginField.getText(), passField.getText())) {
                     //showAlert("Пользователь успешно зарегистрировался!");

@@ -4,22 +4,30 @@ import java.net.Socket;
 public class ClientSession {
     //класс для управления клиентской сессией
     private Socket session;
-    private String serverIp;
-    private int serverPort;
+    private static ClientSession clientSession;
+    private static final String SERVER_IP = "localhost";
+    private static final int SERVER_PORT = 5654;
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
     private String currentFolderId = "root";
     private String parentFolderId = "root";
 
-    public ClientSession(String serverIp, int serverPort) throws IOException {
-        this.serverIp = serverIp;
-        this.serverPort = serverPort;
+    private ClientSession() throws IOException {
+        //this.serverIp = serverIp;
+        //this.serverPort = serverPort;
         openConnection();
+    }
+
+    public static ClientSession getClientSession() throws IOException {
+        if (clientSession == null) {
+            clientSession = new ClientSession();
+        }
+        return clientSession;
     }
 
     private void openConnection() throws IOException {
         if (session == null || session.isClosed()) {
-            session = new Socket(serverIp, serverPort);
+            session = new Socket(SERVER_IP, SERVER_PORT);
             dataInputStream = new DataInputStream(session.getInputStream());
             dataOutputStream = new DataOutputStream(session.getOutputStream());
         }
