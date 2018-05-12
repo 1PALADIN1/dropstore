@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import scenemanager.SceneManager;
 
@@ -93,6 +94,19 @@ public class FileManagerController {
         }
     }
 
+    public void tableMouseClick(MouseEvent event) {
+        if (event.getClickCount() == 2) {
+            TablePosition tablePosition = fileTable.getSelectionModel().getSelectedCells().get(0);
+            int row = tablePosition.getRow();
+            ListItem item = fileTable.getItems().get(row);
+
+            if (item.getType().equals("2")) {
+                if (item.getName().equals("..")) toParentDirectory();
+                else
+                    openDirectory();
+            }
+        }
+    }
 
     public void getLS() {
         fileList = new ArrayList<>();
