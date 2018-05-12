@@ -78,6 +78,7 @@ public class FileManagerController {
         session = ClientApp.getSession();
         if (session != null) {
             getLS();
+            infoLabel.setText("Вы успешно авторизовались");
         }
     }
 
@@ -142,6 +143,9 @@ public class FileManagerController {
 
                 getLS();
             } catch (IOException e) {
+                alert = new CustomAlert(e.getMessage(), "Ошибка", null, Alert.AlertType.ERROR);
+                alert.showSimpleAlert();
+
                 e.printStackTrace();
             }
 
@@ -168,6 +172,8 @@ public class FileManagerController {
             try {
                 session.downloadFileFromServer("1234.txt", "2");
             } catch (Exception e) {
+                alert = new CustomAlert(e.getMessage(), "Ошибка", null, Alert.AlertType.ERROR);
+                alert.showSimpleAlert();
                 System.out.println(e.getMessage());
                 //e.printStackTrace();
             }
@@ -191,6 +197,9 @@ public class FileManagerController {
                 }
 
             } catch (IOException e) {
+                alert = new CustomAlert(e.getMessage(), "Ошибка", null, Alert.AlertType.ERROR);
+                alert.showSimpleAlert();
+
                 System.out.println(e.getMessage());
                 //e.printStackTrace();
             }
