@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import scenemanager.SceneManager;
 
@@ -54,6 +55,8 @@ public class FileManagerController {
     private TableColumn<ListItem, String> nameColumn;
     @FXML
     private TableColumn<ListItem, String> parentColumn;
+    @FXML
+    private TableColumn<ListItem, ImageView> imageColumn;
 
     @FXML
     private void initialize() {
@@ -76,6 +79,8 @@ public class FileManagerController {
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         //parentColumn.setCellValueFactory(new PropertyValueFactory<>("parentId"));
+        imageColumn.setCellValueFactory(new PropertyValueFactory<>("imageView"));
+        typeColumn.setVisible(false);
         fileTable.setEditable(false);
 
         try {
@@ -89,6 +94,19 @@ public class FileManagerController {
         }
     }
 
+    public void tableMouseClick(MouseEvent event) {
+        if (event.getClickCount() == 2) {
+            TablePosition tablePosition = fileTable.getSelectionModel().getSelectedCells().get(0);
+            int row = tablePosition.getRow();
+            ListItem item = fileTable.getItems().get(row);
+
+            if (item.getType().equals("2")) {
+                if (item.getName().equals("..")) toParentDirectory();
+                else
+                    openDirectory();
+            }
+        }
+    }
 
     public void getLS() {
         fileList = new ArrayList<>();
@@ -101,7 +119,13 @@ public class FileManagerController {
             e.printStackTrace();
         }
         for (int i = 0; i < lsFiles.length; i++) {
-            if (i + 3 < lsFiles.length) fileList.add(new ListItem(lsFiles[i], lsFiles[++i], lsFiles[++i], lsFiles[++i]));
+            if (i + 3 < lsFiles.length) {
+                Image image;
+                if (lsFiles[i + 2].equals("2")) image = new Image(getClass().getResourceAsStream("/res/folder.png"));
+                else
+                    image = new Image(getClass().getResourceAsStream("/res/file.png"));
+                fileList.add(new ListItem(lsFiles[i], lsFiles[++i], lsFiles[++i], lsFiles[++i], new ImageView(image)));
+            }
         }
 
         //textArea.clear();
@@ -110,12 +134,12 @@ public class FileManagerController {
         if (fileList.size() == 0) {
             if (!session.getCurrentFolderId().equals("root")) {
                 //textArea.appendText("0\t..\t2\tnull\n");
-                usersData.add(new ListItem("0", "..", "2", session.getCurrentFolderId()));
+                usersData.add(new ListItem("0", "..", "2", session.getCurrentFolderId(), new ImageView(new Image(getClass().getResourceAsStream("/res/up_folder.png")))));
             }
         } else {
             if (!fileList.get(0).getParentId().equals("null")) {
                 //textArea.appendText("0\t..\t2\tnull\n");
-                usersData.add(new ListItem("0", "..", "2", session.getCurrentFolderId()));
+                usersData.add(new ListItem("0", "..", "2", session.getCurrentFolderId(), new ImageView(new Image(getClass().getResourceAsStream("/res/up_folder.png")))));
             }
         }
         for (int i = 0; i < fileList.size(); i++) {
@@ -124,7 +148,7 @@ public class FileManagerController {
             //textArea.appendText(fileList.get(i).getName() + "\n");
 
             //таблица
-            usersData.add(new ListItem(fileList.get(i).getId(), fileList.get(i).getName(), fileList.get(i).getType(), fileList.get(i).getParentId()));
+            usersData.add(new ListItem(fileList.get(i).getId(), fileList.get(i).getName(), fileList.get(i).getType(), fileList.get(i).getParentId(), fileList.get(i).getImageView()));
         }
 
         typeColumn.setSortable(true);

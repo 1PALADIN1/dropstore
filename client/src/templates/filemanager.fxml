@@ -22,11 +22,12 @@
          </children>
       </HBox>
       <!--<TextArea fx:id="textArea" prefHeight="0.0" prefWidth="800.0" /> -->
-      <TableView fx:id="fileTable" prefHeight="600.0" prefWidth="200.0">
+      <TableView fx:id="fileTable" prefHeight="600.0" prefWidth="200.0" onMouseClicked="#tableMouseClick" >
           <columns>
               <!-- <TableColumn fx:id="idColumn" prefWidth="50.0" text="ID" /> -->
-              <TableColumn fx:id="typeColumn" prefWidth="50.0" text="ТИП" />
+              <TableColumn fx:id="imageColumn" prefWidth="50.0" text="ТИП" />
               <TableColumn fx:id="nameColumn" prefWidth="745.0" text="ИМЯ" />
+              <TableColumn fx:id="typeColumn" prefWidth="0.0" text="ТИП_НОМ" />
               <!-- <TableColumn fx:id="parentColumn" prefWidth="100.0" text="PARENT" /> -->
           </columns>
       </TableView>
