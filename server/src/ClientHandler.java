@@ -89,7 +89,13 @@ public class ClientHandler implements Runnable {
                             }
                             break;
                             case DELETE: {
-                                sessionManager.deleteFileFromServer(login, data[1], data[2]);
+                                try {
+                                    sessionManager.deleteFileFromServer(login, data[1], data[2], data[3]);
+                                    dataOutputStream.writeUTF(Command.OK.getCommandString() + "|Данные успешно удалены");
+                                } catch (SQLException | CustomServerException e) {
+                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|" + e.getMessage());
+                                    System.out.println("Ошибка удаления: " + e.getMessage());
+                                }
                             }
                             break;
                             default:

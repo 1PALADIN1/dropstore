@@ -146,12 +146,20 @@ public class SessionManager {
     }
 
     //удаление файла
-    public void deleteFileFromServer(String fileName, String folderId, String objectType) {
+    public void deleteFileFromServer(String fileName, String folderId, String objectType) throws IOException {
         String msg = Command.DELETE.getCommandString() + " " + fileName + " " + folderId + " " + objectType;
-        try {
-            dataOutputStream.writeUTF(msg);
-        } catch (IOException e) {
-            e.printStackTrace();
+        dataOutputStream.writeUTF(msg);
+        String[] data = dataInputStream.readUTF().split("\\|");
+
+        switch (Command.getCommand(data[0])) {
+            case OK:
+                System.out.println(data[1]);
+                break;
+            case ERROR:
+                System.out.println("Ошибка! " + data[1]);
+                break;
+            default:
+                System.out.println("Команда не распознана");
         }
     }
 

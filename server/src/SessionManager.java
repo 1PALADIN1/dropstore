@@ -64,9 +64,9 @@ public class SessionManager {
         rs = dbManager.query("users", "login = ?", login);
         if (rs.next()) userId = rs.getString("id");
 
-        if (folderId.equals("root")) checkExist = dbManager.checkExistence("files", "user_id = ? and file_name = ? and parent_dir_id is null", userId, fileName);
+        if (folderId.equals("root")) checkExist = dbManager.checkExistence("files", "user_id = ? AND file_name = ? AND parent_dir_id is null", userId, fileName);
         else
-            checkExist = dbManager.checkExistence("files", "user_id = ? and file_name = ? and parent_dir_id = ?", userId, fileName, folderId);
+            checkExist = dbManager.checkExistence("files", "user_id = ? AND file_name = ? AND parent_dir_id = ?", userId, fileName, folderId);
 
         if (!checkExist) {
             //TODO заменить на кастомные
@@ -92,9 +92,9 @@ public class SessionManager {
         rs = dbManager.query("users", "login = ?", login);
         if (rs.next()) userId = rs.getString("id");
 
-        if (folderId.equals("root")) checkExist = dbManager.checkExistence("files", "user_id = ? and file_name = ? and parent_dir_id is null", userId, dirName);
+        if (folderId.equals("root")) checkExist = dbManager.checkExistence("files", "user_id = ? AND file_name = ? AND parent_dir_id is null", userId, dirName);
         else
-            checkExist = dbManager.checkExistence("files", "user_id = ? and file_name = ? and parent_dir_id = ?", userId, dirName, folderId);
+            checkExist = dbManager.checkExistence("files", "user_id = ? AND file_name = ? AND parent_dir_id = ?", userId, dirName, folderId);
 
         if (checkExist) throw new Exception("Такая папка уже существует!");
         else {
@@ -109,14 +109,33 @@ public class SessionManager {
     }
 
     //удаление файла с сервера и базы
-    //TODO поправить метод
-    public void deleteFileFromServer(String login, String filePath, String fileName) {
-        if (filePath.equals("root")) filePath = "";
-        File file = new File("share//" + login + "//" + filePath + fileName);
-        if (file.exists()) {
-            if (file.delete()) {
-                dbManager.delete("files", "file_path = ? AND file_name = ?", "share//" + login + "//" + filePath, fileName);
+    public void deleteFileFromServer(String login, String fileName, String folderId, String objectType) throws SQLException, CustomServerException {
+        String userId = null;
+        ResultSet rs;
+        File file;
+
+        //TODO вынести в отдельный метод
+        rs = dbManager.query("users", "login = ?", login);
+        if (rs.next()) userId = rs.getString("id");
+
+        if (objectType.equals("1")) {
+            //для файлов
+
+            if (folderId.equals("root")) file = new File("share//" + login + "//" + fileName);
+            else
+                file = new File("share//" + login + "//" + folderId + "_" + fileName);
+            if (file.exists()) {
+                if (file.delete()) {
+                    if (folderId.equals("root")) dbManager.delete("files", "user_id = ? AND file_name = ? AND parent_dir_id is null", userId, fileName);
+                    else
+                        dbManager.delete("files", "user_id = ? AND file_name = ? AND parent_dir_id = ?", userId, fileName, folderId);
+                }
+            } else {
+                throw new CustomServerException("Не удалось найти файл на сервере");
             }
+        } else {
+            //для папок
+            //TODO реализовать каскадное удаление файлов
         }
     }
 
