@@ -2,6 +2,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.SQLException;
 
 public class ClientHandler implements Runnable {
     private Socket socket;
@@ -37,16 +38,53 @@ public class ClientHandler implements Runnable {
                     if (data.length >= 2) {
                         switch (command) {
                             case LS: {
-                                dataOutputStream.writeUTF(sessionManager.getFileList(login));
+                                dataOutputStream.writeUTF(sessionManager.getFileList(login, data[1]));
                             }
                             break;
                             case UPLOAD: {
                                 dataOutputStream.writeUTF(Command.CONTINUE.getCommandString());
-
                                 if (dataInputStream.read() != -1) {
                                     byte[] fileBytes = new byte[dataInputStream.available()];
                                     dataInputStream.read(fileBytes);
-                                    sessionManager.uploadFileOnServer(login, data[1], fileBytes);
+                                    try {
+                                        sessionManager.uploadFileOnServer(login, data[1], data[2], fileBytes);
+                                        dataOutputStream.writeUTF(Command.OK.getCommandString() + "|Файл успешно загружен");
+                                    } catch (IOException e) {
+                                        dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|Произошла ошибка при загрузке файла, обратитесь к администратору");
+                                    } catch (CustomServerException e) {
+                                        dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|" + e.getMessage());
+                                    }
+                                }
+                            }
+                            break;
+                            case DOWNLOAD: {
+                                byte[] fileBytes;
+                                try {
+                                    fileBytes = sessionManager.downloadFileFromServer(login, data[1], data[2]);
+                                    dataOutputStream.writeUTF(Command.CONTINUE.getCommandString());
+                                    dataOutputStream.write(fileBytes);
+                                } catch (Exception e) {
+                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + " " + e.getMessage());
+                                    System.out.println("Ошибка при отправке файла: " + e.getMessage());
+                                }
+                            }
+                            break;
+                            case CREATEDIR: {
+                                try {
+                                    sessionManager.createDirectory(login, data[1], data[2]);
+                                    dataOutputStream.writeUTF(Command.OK.getCommandString());
+                                } catch (Exception e) {
+                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + " " + e.getMessage());
+                                    System.out.println("Ошибка при создании директории: " + e.getMessage());
+                                }
+                            }
+                            break;
+                            case PARENTDIR: {
+                                try {
+                                    String parentFolderId = sessionManager.getParentFolderId(login, data[1]);
+                                    dataOutputStream.writeUTF(Command.OK.getCommandString() + "|" + parentFolderId);
+                                } catch (SQLException e) {
+                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|" + e.getMessage());
                                 }
                             }
                             break;

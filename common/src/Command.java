@@ -1,6 +1,6 @@
 public enum Command {
     //команды
-    REG("/reg"), AUTH("/auth"), OK("/ok"), ERROR("/error"), LS("/ls"), UPLOAD("/upload"), DOWNLOAD("/download"), DELETE("/del"), CONTINUE("/continue"), NONE("/none");
+    REG("/reg"), AUTH("/auth"), OK("/ok"), ERROR("/error"), LS("/ls"), UPLOAD("/upload"), DOWNLOAD("/download"), DELETE("/del"), CONTINUE("/continue"), CREATEDIR("/createdir"), PARENTDIR("/parentdir"), NONE("/none");
 
     private String commandString;
 
@@ -20,8 +20,11 @@ public enum Command {
             case "/error": return ERROR; //ошибка при выполнении операции
             case "/ls": return LS; //список файлов
             case "/continue": return CONTINUE; //продолжить выполнение (например, сервер отсылает эту команду, когда готов принимать файлы)
-            case "/upload": return UPLOAD;
-            case "/del": return DELETE;
+            case "/upload": return UPLOAD; //загрузить на сервер
+            case "/download": return DOWNLOAD; //скачать с сервера
+            case "/del": return DELETE; //удалить с сервера
+            case "/createdir": return CREATEDIR; //содание директории на сервере
+            case "/parentdir": return PARENTDIR; //получение родительской папки с сервера
             default:
                 return NONE; //команда не распознана
         }

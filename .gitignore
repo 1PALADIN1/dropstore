@@ -6,3 +6,4 @@
 *.db
 /download/
 /share/
+/client/src/res/
