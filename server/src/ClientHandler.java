@@ -29,7 +29,7 @@ public class ClientHandler implements Runnable {
             while (true) {
                 String msg = dataInputStream.readUTF();
                 System.out.println(msg);
-                String[] data = msg.split("\\s");
+                String[] data = msg.split("\\|");
                 command = Command.getCommand(data[0]);
 
                 if (isAuth) {
@@ -63,7 +63,7 @@ public class ClientHandler implements Runnable {
                                     dataOutputStream.writeUTF(Command.CONTINUE.getCommandString());
                                     dataOutputStream.write(fileBytes);
                                 } catch (Exception e) {
-                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + " " + e.getMessage());
+                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|" + e.getMessage());
                                     System.out.println("Ошибка при отправке файла: " + e.getMessage());
                                 }
                             }
@@ -73,7 +73,7 @@ public class ClientHandler implements Runnable {
                                     sessionManager.createDirectory(login, data[1], data[2]);
                                     dataOutputStream.writeUTF(Command.OK.getCommandString());
                                 } catch (Exception e) {
-                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + " " + e.getMessage());
+                                    dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|" + e.getMessage());
                                     System.out.println("Ошибка при создании директории: " + e.getMessage());
                                 }
                             }
@@ -111,7 +111,7 @@ public class ClientHandler implements Runnable {
                                 System.out.println("Пользователь " + login + " авторизовался в системе");
                                 isAuth = true;
                             } else {
-                                dataOutputStream.writeUTF(Command.ERROR.getCommandString());
+                                dataOutputStream.writeUTF(Command.ERROR.getCommandString() + "|Не получилось авторизоваться, проверьте логин и пароль");
                             }
                         } else {
                             if (command == Command.REG) {

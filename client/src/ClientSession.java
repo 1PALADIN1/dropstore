@@ -33,23 +33,24 @@ public class ClientSession {
         }
     }
 
-    public boolean authUser(String login, String password) throws IOException {
-        String msg = "/auth " + login + " " + password; //временно для отладки
+    public boolean authUser(String login, String password) throws CustomClientException, IOException {
+        if (login.isEmpty() || password.isEmpty()) throw new CustomClientException("Логин/пароль не должен быть пустым");
+        String msg = Command.AUTH.getCommandString() + "|" + login + "|" + password; //временно для отладки
         dataOutputStream.writeUTF(msg);
-        msg = dataInputStream.readUTF();
+        String[] data = dataInputStream.readUTF().split("\\|");
 
         //запрос на авторизацию
-        switch (msg) {
+        switch (Command.getCommand(data[0])) {
             //временные заглушки
-            case "/ok": return true;
-            case "/error": return false;
+            case OK: return true;
+            case ERROR: throw new CustomClientException(data[1]);
             default:
-                throw new IOException("Команда не распознана"); //TODO сделать отдельный класс для своих исключений
+                throw new CustomClientException("Команда не распознана");
         }
     }
 
-    public boolean regUser(String login, String password) throws IOException {
-        String msg = Command.REG.getCommandString() + " " + login + " " + password;
+    public boolean regUser(String login, String password) throws IOException { //TODO поправить метод
+        String msg = Command.REG.getCommandString() + "|" + login + "|" + password;
         dataOutputStream.writeUTF(msg);
         msg = dataInputStream.readUTF();
 
@@ -64,7 +65,7 @@ public class ClientSession {
 
     //получение списка файлов относительно директории dir
     public String[] getLS(String dir) {
-        String msg = "/ls " + dir;
+        String msg = Command.LS.getCommandString() + "|" + dir;
         try {
             dataOutputStream.writeUTF(msg);
             msg = dataInputStream.readUTF();
@@ -78,7 +79,7 @@ public class ClientSession {
 
     //отправка файла на сервер
     public void sendFileToServer(String fileName, String folderId, File file) {
-        String msg = Command.UPLOAD.getCommandString() + " " + fileName + " " + folderId;
+        String msg = Command.UPLOAD.getCommandString() + "|" + fileName + "|" + folderId;
         FileInputStream fileInputStream = null;
         try {
             dataOutputStream.writeUTF(msg);
@@ -112,9 +113,9 @@ public class ClientSession {
     }
 
     public void createDirectory(String dirName, String folderId) throws IOException {
-        String msg = Command.CREATEDIR.getCommandString() + " " + dirName + " " + folderId;
+        String msg = Command.CREATEDIR.getCommandString() + "|" + dirName + "|" + folderId;
         dataOutputStream.writeUTF(msg);
-        String[] data = dataInputStream.readUTF().split("\\s");
+        String[] data = dataInputStream.readUTF().split("\\|");
 
         //TODO добавить кастомные ошибки
         switch (Command.getCommand(data[0])) {
@@ -135,9 +136,9 @@ public class ClientSession {
         File rootFolder = new File("//download"); //папка для загрузки
         if (!rootFolder.exists()) rootFolder.mkdirs();
 
-        String msg = Command.DOWNLOAD.getCommandString() + " " + fileName + " " + folderId;
+        String msg = Command.DOWNLOAD.getCommandString() + "|" + fileName + "|" + folderId;
         dataOutputStream.writeUTF(msg);
-        String[] data = dataInputStream.readUTF().split("\\s");
+        String[] data = dataInputStream.readUTF().split("\\|");
 
         if (data[0].equals(Command.ERROR.getCommandString())) throw new Exception(data[1]);
         if (data[0].equals(Command.CONTINUE.getCommandString())) {
@@ -155,7 +156,7 @@ public class ClientSession {
 
     //удаление файла
     public void deleteFileFromServer(String fileName, String folderId, String objectType) throws IOException {
-        String msg = Command.DELETE.getCommandString() + " " + fileName + " " + folderId + " " + objectType;
+        String msg = Command.DELETE.getCommandString() + "|" + fileName + "|" + folderId + "|" + objectType;
         dataOutputStream.writeUTF(msg);
         String[] data = dataInputStream.readUTF().split("\\|");
 
@@ -191,7 +192,7 @@ public class ClientSession {
     }
 
     public String getServerParentFolderId(String folderId) throws IOException {
-        String msg = Command.PARENTDIR.getCommandString() + " " + folderId;
+        String msg = Command.PARENTDIR.getCommandString() + "|" + folderId;
         dataOutputStream.writeUTF(msg);
 
         String[] data = dataInputStream.readUTF().split("\\|");

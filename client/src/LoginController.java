@@ -55,6 +55,9 @@ public class LoginController {
             alert = new CustomAlert(e.getMessage(), "Ошибка", null, Alert.AlertType.ERROR);
             alert.showAlert();
             //showAlert(e.getMessage());
+        } catch (CustomClientException e) {
+            alert = new CustomAlert(e.getMessage(), "Ошибка", null, Alert.AlertType.ERROR);
+            alert.showAlert();
         } catch (Exception e) {
             e.printStackTrace();
         }
