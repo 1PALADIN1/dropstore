@@ -170,7 +170,16 @@ public class FileManagerController {
         session = ClientApp.getSession();
         if (session != null) {
             try {
-                session.downloadFileFromServer("1234.txt", "2");
+                TablePosition tablePosition = fileTable.getSelectionModel().getSelectedCells().get(0);
+                int row = tablePosition.getRow();
+                ListItem item = fileTable.getItems().get(row);
+
+                if (item.getType().equals("1")) {
+                    session.downloadFileFromServer(item.getName(), session.getCurrentFolderId());
+                } else {
+                    alert = new CustomAlert("Скачать с сервера можно только файл", "Ошибка", null, Alert.AlertType.ERROR);
+                    alert.showSimpleAlert();
+                }
             } catch (Exception e) {
                 alert = new CustomAlert(e.getMessage(), "Ошибка", null, Alert.AlertType.ERROR);
                 alert.showSimpleAlert();
