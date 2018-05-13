@@ -24,7 +24,7 @@ public class ClientHandler implements Runnable {
         try {
             dataInputStream = new DataInputStream(socket.getInputStream());
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            sessionManager = new SessionManager(authService); //TODO сделать один на весь проект (либо сделать Singleton для DBManager)
+            sessionManager = new SessionManager(authService);
 
             while (true) {
                 String msg = dataInputStream.readUTF();
@@ -38,7 +38,6 @@ public class ClientHandler implements Runnable {
                     if (data.length >= 2) {
                         switch (command) {
                             case LS: {
-                                //TODO вынести exception
                                 dataOutputStream.writeUTF(sessionManager.getFileList(login, data[1]));
                             }
                             break;
