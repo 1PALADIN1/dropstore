@@ -63,7 +63,6 @@ public class LoginController {
         }
     }
 
-    //TODO вынести в отдельный контроллер со своим представлением
     public void registration() {
         try {
             session = ClientSession.getClientSession();
